@@ -31,7 +31,7 @@ import SafetyReportModal from './components/Modals/SafetyReportModal';
 import { getActiveLocality, getActiveCity, subscribeHommieState } from './services/hommieState';
 
 function HommieMainApp() {
-  const { currentUser, role, switchRole } = useAuth();
+  const { currentUser, role } = useAuth();
 
   // Navigation State
   const [currentView, setCurrentView] = useState(() => {
@@ -240,7 +240,6 @@ function HommieMainApp() {
         {currentView === 'pro-onboarding' && (
           <ProfessionalOnboardingView
             onCompleted={() => {
-              switchRole('worker');
               navigateTo('pro-dashboard');
             }}
             onBack={() => navigateTo('home')}

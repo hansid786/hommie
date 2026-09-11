@@ -41,7 +41,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
     setIsSubmitting(true);
     try {
       setFormError('');
-      const res = await login(phone || email, password, role);
+      const res = await login(phone || email, password);
       if (res.success) {
         showToast(`Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
@@ -72,26 +72,6 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         showToast(`Account created successfully! Welcome to the marketplace.`);
         if (onSuccess) onSuccess(res.user);
       }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleQuickDemo = async (demoRole) => {
-    setIsSubmitting(true);
-    try {
-      if (demoRole === 'admin') {
-        const res = await login('admin@doorstep-pro.in', 'admin123', 'admin');
-        if (res.success && onSuccess) onSuccess(res.user);
-        return;
-      }
-      if (demoRole === 'worker') {
-        const res = await login('9845021984', 'worker123', 'worker');
-        if (res.success && onSuccess) onSuccess(res.user);
-        return;
-      }
-      const res = await login('9845077123', 'customer123', 'customer');
-      if (res.success && onSuccess) onSuccess(res.user);
     } finally {
       setIsSubmitting(false);
     }
@@ -151,7 +131,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         </div>
 
         {/* Role Selection */}
-        <div className="space-y-1.5">
+        {mode === 'register' && <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Select Your Role
           </label>
@@ -196,7 +176,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
               </div>
             </button>
           </div>
-        </div>
+        </div>}
 
         {/* Form Body */}
         {mode === 'login' ? (
@@ -332,51 +312,6 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
             </button>
           </form>
         )}
-
-        {/* 1-Click Fast Demo Logins */}
-        <div className="pt-4 border-t border-slate-100 space-y-2">
-          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block text-center">
-            One-Click Test Accounts
-          </span>
-
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('customer')}
-              className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-between transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">C</span>
-                <span>Customer Portal (Hanzala / Rahul)</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('worker')}
-              className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-between transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">W</span>
-                <span>Partner Pro (Arjun Singh - AC Specialist)</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('admin')}
-              className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-between transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-xs">A</span>
-                <span>Platform Operations Control Center</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
-            </button>
-          </div>
-        </div>
 
       </div>
 

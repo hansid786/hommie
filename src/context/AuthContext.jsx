@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { HOMMIE_SEED_CUSTOMER, HOMMIE_PROFESSIONALS } from '../data/hommieData';
+import { HOMMIE_SEED_CUSTOMER } from '../data/hommieData';
 import { apiLogin, apiRegister } from '../services/api';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 
@@ -73,12 +73,13 @@ export const AuthProvider = ({ children }) => {
         const { data, error } = await supabase.auth.signInWithPassword({ email: phoneOrEmail, password });
         if (error) throw new Error('Invalid email or password');
         const metadata = data.user.user_metadata || {};
+        const appMetadata = data.user.app_metadata || {};
         const user = {
           id: data.user.id,
           email: data.user.email,
           name: metadata.fullName || metadata.name || data.user.email?.split('@')[0],
           phone: metadata.phone || '',
-          role: metadata.role === 'professional' ? 'worker' : (metadata.role || roleHint)
+          role: appMetadata.role === 'professional' ? 'worker' : (appMetadata.role || metadata.role || 'customer')
         };
         setCurrentUser(user);
         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
@@ -135,44 +136,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem('hommie_auth_user_v1');
-  };
-
-  const switchRole = (newRole) => {
-    if (newRole === 'professional' || newRole === 'worker') {
-      const pro = HOMMIE_PROFESSIONALS[0];
-      const proUser = {
-        id: pro.userId,
-        proId: pro.id,
-        name: pro.name,
-        phone: pro.phone,
-        email: pro.email,
-        role: 'worker',
-        trade: pro.trade,
-        avatar: pro.avatar,
-        kycStatus: pro.kycStatus,
-        isAvailable: pro.isAvailable
-      };
-      setCurrentUser(proUser);
-      localStorage.setItem('hommie_auth_user_v1', JSON.stringify(proUser));
-    } else if (newRole === 'admin') {
-      const adminUser = {
-        id: 'u-admin-1',
-        name: 'HOMMIE Operations Lead',
-        phone: '+91 99000 11223',
-        email: 'ops@hommie.in',
-        role: 'admin',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
-      };
-      setCurrentUser(adminUser);
-      localStorage.setItem('hommie_auth_user_v1', JSON.stringify(adminUser));
-    } else {
-      const custUser = { ...HOMMIE_SEED_CUSTOMER, role: 'customer' };
-      setCurrentUser(custUser);
-      localStorage.setItem('hommie_auth_user_v1', JSON.stringify(custUser));
+  const logout = async () => {
+    if (isSupabaseConfigured && supabase) {
+      await supabase.auth.signOut();
     }
+    setCurrentUser(null);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
   };
 
   return (
@@ -183,8 +152,7 @@ export const AuthProvider = ({ children }) => {
       isLoading,
       login,
       register,
-      logout,
-      switchRole
+      logout
     }}>
       {children}
     </AuthContext.Provider>

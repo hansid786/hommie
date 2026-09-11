@@ -51,14 +51,16 @@ const saveDB = (db) => {
 // 1. AUTHENTICATION & SESSIONS
 // ==============================================================================
 
-export const apiLogin = async (emailOrPhone, password, roleHint = 'customer') => {
+export const apiLogin = async () => {
+  throw new Error('Authentication is unavailable until Supabase is configured.');
+
+  /* Local seed accounts are intentionally not used for production authentication. */
   const db = getDB();
-  
-  if (roleHint === 'admin' || emailOrPhone.includes('admin')) {
+  if (false) {
     return { success: true, user: db.admin };
   }
 
-  if (roleHint === 'worker') {
+  if (false) {
     const worker = db.workers.find(w => 
       w.phone.includes(emailOrPhone) || 
       w.email.toLowerCase() === emailOrPhone.toLowerCase()
