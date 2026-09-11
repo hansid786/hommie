@@ -13,6 +13,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { createBooking, getCategories, getActiveLocality, getActiveCity } from '../../services/hommieState';
+import AddressAutocompleteInput from '../Common/AddressAutocompleteInput';
 
 export default function HommieBookingModal({
   isOpen,
@@ -27,6 +28,7 @@ export default function HommieBookingModal({
   const [scheduledSlot, setScheduledSlot] = useState('10:00 AM - 12:00 PM');
   const [flatNumber, setFlatNumber] = useState('Flat 302, Palm Heights');
   const [street, setStreet] = useState('12th Main Road, 4th Cross');
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [specialNotes, setSpecialNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -61,9 +63,12 @@ export default function HommieBookingModal({
         address: {
           flatNo: flatNumber,
           street: street,
-          locality: activeLocality?.name || pro.primaryLocality,
-          city: activeCity?.name || pro.city,
-          formattedAddress: `${flatNumber}, ${street}, ${activeLocality?.name || pro.primaryLocality}, ${activeCity?.name || pro.city}`
+          locality: selectedAddress?.locality || activeLocality?.name || pro.primaryLocality,
+          city: 'Lucknow',
+          pincode: selectedAddress?.pincode || '',
+          lat: selectedAddress?.lat || null,
+          lng: selectedAddress?.lng || null,
+          formattedAddress: `${flatNumber}, ${street}, ${selectedAddress?.description || `${activeLocality?.name || pro.primaryLocality}, Lucknow`}`
         }
       });
 
@@ -188,7 +193,7 @@ export default function HommieBookingModal({
                 Service Address
               </label>
               <span className="text-[11px] text-amber-700 font-semibold">
-                {activeLocality?.name || 'Indiranagar'}, {activeCity?.name || 'Bengaluru'}
+                {selectedAddress?.locality || activeLocality?.name || 'Gomti Nagar'}, Lucknow
               </span>
             </div>
 
@@ -201,10 +206,26 @@ export default function HommieBookingModal({
               className="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500"
             />
 
-            <input
-              type="text"
-              required
-              placeholder="Street / Landmark *"
+  <AddressAutocompleteInput
+  value={street}
+  onChange={(value) => {
+    setStreet(value);
+    setSelectedAddress(null);
+  }}
+  onSelectAddress={setSelectedAddress}
+  placeholder="Search exact service location or use GPS *"
+  />
+  {selectedAddress?.lat && selectedAddress?.lng && (
+    <div className="flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-[11px] text-emerald-800">
+      <MapPin className="h-3.5 w-3.5 shrink-0" />
+      <span>Exact location selected. Worker will see this pin with your booking.</span>
+    </div>
+  )}
+
+  <input
+  type="text"
+  required
+  placeholder="Street / Landmark *"
               value={street}
               onChange={(e) => setStreet(e.target.value)}
               className="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500"

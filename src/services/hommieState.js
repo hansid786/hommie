@@ -44,10 +44,10 @@ function saveToStorage(key, data) {
 }
 
 // In-Memory Global State Singletons
-let _cities = loadFromStorage(STORAGE_KEYS.CITIES, HOMMIE_CITIES);
+let _cities = loadFromStorage(STORAGE_KEYS.CITIES, HOMMIE_CITIES).filter((city) => city.name === 'Lucknow');
 let _categories = loadFromStorage(STORAGE_KEYS.CATEGORIES, HOMMIE_CATEGORIES);
 let _pros = loadFromStorage(STORAGE_KEYS.PROFESSIONALS, HOMMIE_PROFESSIONALS);
-let _customer = loadFromStorage(STORAGE_KEYS.CUSTOMER, HOMMIE_SEED_CUSTOMER);
+let _customer = { ...loadFromStorage(STORAGE_KEYS.CUSTOMER, HOMMIE_SEED_CUSTOMER), city: 'Lucknow' };
 let _homeAssets = loadFromStorage(STORAGE_KEYS.HOME_ASSETS, HOMMIE_MY_HOME_ASSETS);
 let _bookings = loadFromStorage(STORAGE_KEYS.BOOKINGS, HOMMIE_SEED_BOOKINGS);
 let _auditLogs = loadFromStorage(STORAGE_KEYS.AUDIT_LOGS, [
@@ -77,12 +77,12 @@ export function getCities() {
 }
 
 export function getActiveCity() {
-  return _cities.find((c) => c.name === (_customer?.city || 'Bengaluru')) || _cities[0];
+  return _cities.find((c) => c.name === (_customer?.city || 'Lucknow')) || _cities.find((c) => c.name === 'Lucknow') || _cities[0];
 }
 
 export function getActiveLocality() {
   const city = getActiveCity();
-  const targetName = _customer?.activeLocality || 'Indiranagar';
+  const targetName = _customer?.activeLocality || 'Gomti Nagar';
   return city.localities.find((l) => l.name.toLowerCase() === targetName.toLowerCase()) || city.localities[0];
 }
 
@@ -232,6 +232,12 @@ export function createBooking(payload) {
 
   const newBooking = {
     id: 'b-' + Date.now(),
+    locationSharing: {
+      customer: null,
+      worker: null,
+      customerSharing: false,
+      workerSharing: false
+    },
     bookingRef: 'HOM-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000),
     customerId: payload.customerId || _customer?.id || 'u-cust-1',
     customerName: payload.customerName || _customer?.name || 'Hanzala Siddiqui',
@@ -268,12 +274,14 @@ export function createBooking(payload) {
       }
     ],
     address: payload.address || {
-      flatNo: 'A-402, Green Glen Layout',
+      flatNo: 'Flat 302, Palm Heights',
       street: '12th Main Road',
-      locality: _customer?.activeLocality || 'Indiranagar',
-      city: _customer?.city || 'Bengaluru',
-      pincode: '560038',
-      formattedAddress: 'A-402, Green Glen, 12th Main, Indiranagar, Bengaluru - 560038'
+      locality: _customer?.activeLocality || 'Gomti Nagar',
+      city: 'Lucknow',
+      pincode: '226010',
+      lat: null,
+      lng: null,
+      formattedAddress: 'Flat 302, Palm Heights, Gomti Nagar, Lucknow - 226010'
     },
     notes: payload.notes || 'Please ring bell upon arrival',
     safetyGuidelinesAcknowledged: true,
@@ -320,12 +328,49 @@ export function createBooking(payload) {
   return newBooking;
 }
 
+export function startBookingLocationSharing(bookingId, role) {
+  const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
+  if (!booking || !['customer', 'worker'].includes(role)) return false;
+  booking.locationSharing = booking.locationSharing || { customer: null, worker: null, customerSharing: false, workerSharing: false };
+  booking.locationSharing[role + 'Sharing'] = true;
+  booking.locationSharing[role + 'StartedAt'] = new Date().toISOString();
+  saveToStorage(STORAGE_KEYS.BOOKINGS, _bookings);
+  notifyStateChanged();
+  return true;
+}
+
+export function stopBookingLocationSharing(bookingId, role) {
+  const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
+  if (!booking || !['customer', 'worker'].includes(role)) return false;
+  booking.locationSharing = booking.locationSharing || { customer: null, worker: null, customerSharing: false, workerSharing: false };
+  booking.locationSharing[role + 'Sharing'] = false;
+  booking.locationSharing[role + 'StoppedAt'] = new Date().toISOString();
+  saveToStorage(STORAGE_KEYS.BOOKINGS, _bookings);
+  notifyStateChanged();
+  return true;
+}
+
+export function updateBookingLocation(bookingId, role, position) {
+  const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
+  if (!booking || !['customer', 'worker'].includes(role)) return false;
+  booking.locationSharing = booking.locationSharing || { customer: null, worker: null, customerSharing: false, workerSharing: false };
+  if (!booking.locationSharing[role + 'Sharing']) return false;
+  booking.locationSharing[role] = { ...position, updatedAt: position.updatedAt || new Date().toISOString() };
+  saveToStorage(STORAGE_KEYS.BOOKINGS, _bookings);
+  notifyStateChanged();
+  return true;
+}
+
 export function advanceBookingStatus(bookingId, nextStatus, options = {}) {
   const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
   if (!booking) return { success: false, error: 'Booking not found' };
 
   const prevStatus = booking.status;
   booking.status = nextStatus;
+  if (['completed', 'cancelled_by_customer', 'cancelled_by_pro'].includes(nextStatus) && booking.locationSharing) {
+    booking.locationSharing.customerSharing = false;
+    booking.locationSharing.workerSharing = false;
+  }
 
   booking.statusHistory.push({
     status: nextStatus,
@@ -652,9 +697,9 @@ export function registerNewProfessional(payload) {
     about: payload.about || 'Skilled independent professional dedicated to transparent diagnostics and high-quality workmanship.',
     phone: payload.phone,
     email: payload.email || 'pro@hommie.in',
-    city: payload.city || 'Bengaluru',
-    primaryLocality: payload.primaryLocality || 'Indiranagar',
-    serviceLocalities: payload.serviceLocalities || [payload.primaryLocality || 'Indiranagar'],
+    city: 'Lucknow',
+    primaryLocality: payload.primaryLocality || 'Gomti Nagar',
+    serviceLocalities: payload.serviceLocalities || [payload.primaryLocality || 'Gomti Nagar'],
     serviceRadiusKm: 10,
     languages: ['Hindi', 'English'],
     experienceYears: Number(payload.experienceYears || 5),

@@ -104,7 +104,7 @@ export default function CustomerHomeView({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-24 md:pb-16 font-sans">
+    <div className="min-h-screen bg-[#f4f7fb] text-slate-900 pb-24 md:pb-16 font-sans">
       {/* 1. HERO SECTION */}
       <section className="relative bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent pt-6 sm:pt-10 pb-12 px-4 sm:px-6 lg:px-8 border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto">
@@ -116,7 +116,7 @@ export default function CustomerHomeView({
             >
               <MapPin className="w-4 h-4 text-amber-600 shrink-0" />
               <span>
-                Sector: <strong className="text-slate-950">{activeLocality?.name || 'Indiranagar'}</strong>, {activeCity?.name || 'Bengaluru'}
+                Sector: <strong className="text-slate-950">{activeLocality?.name || 'Gomti Nagar'}</strong>, {activeCity?.name || 'Lucknow'}
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             </button>
@@ -210,61 +210,38 @@ export default function CustomerHomeView({
             </div>
           </form>
 
-          {/* 2 Dispatch Modes: Urgent vs Scheduled */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
-            {/* Urgent Dispatch */}
-            <div className="p-5 rounded-3xl bg-white border border-amber-300 shadow-sm hover:shadow-md transition flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+          {/* 2. Clear service paths */}
+          <div className="mt-8 max-w-5xl">
+            <div className="flex items-end justify-between gap-3 mb-4">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold shrink-0 shadow-xs">
-                    <Zap className="w-5 h-5" />
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
-                    ⚡ 15–30 Min Arrival
-                  </span>
-                </div>
-
-                <h3 className="font-extrabold text-slate-950 text-base">Urgent Help Right Now</h3>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Electrical tripping, leaking pipes, or sudden appliance breakdown. Nearby available pros alerted immediately.
-                </p>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">What do you need today?</p>
+                <h2 className="mt-1 text-lg sm:text-xl font-extrabold text-slate-950">Choose the right way to get help</h2>
               </div>
-
-              <button
-                onClick={() => onNavigate('discovery', { urgent: true })}
-                className="mt-4 w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition flex items-center justify-center gap-1.5 shadow-xs"
-              >
-                <span>Find Immediate Emergency Pros</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+              <button onClick={() => onNavigate('discovery')} className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-950">
+                See all services <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            {/* Scheduled Dispatch */}
-            <div className="p-5 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition flex flex-col justify-between group">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-bold shrink-0 shadow-xs">
-                    <Calendar className="w-5 h-5" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { icon: Zap, title: 'Emergency help', description: 'Get a nearby pro for urgent repairs.', meta: '15–30 min arrival', action: () => onNavigate('discovery', { urgent: true }), tone: 'border-amber-300 bg-amber-50', iconTone: 'bg-amber-500 text-slate-950', buttonTone: 'bg-amber-500 text-slate-950 hover:bg-amber-400' },
+                { icon: Calendar, title: 'Book for later', description: 'Pick a date and convenient time slot.', meta: 'Flexible scheduling', action: () => onNavigate('discovery'), tone: 'border-sky-200 bg-sky-50', iconTone: 'bg-sky-600 text-white', buttonTone: 'bg-sky-600 text-white hover:bg-sky-500' },
+                { icon: Users, title: 'Browse professionals', description: 'Compare profiles, prices, and reviews.', meta: `${featuredPros.length || 0}+ local pros`, action: () => onNavigate('discovery'), tone: 'border-emerald-200 bg-emerald-50', iconTone: 'bg-emerald-600 text-white', buttonTone: 'bg-emerald-600 text-white hover:bg-emerald-500' },
+                { icon: CheckCircle2, title: 'Track my booking', description: 'See updates, quotes, and payment status.', meta: `${activeBookings.length} active booking${activeBookings.length === 1 ? '' : 's'}`, action: () => onNavigate('bookings'), tone: 'border-violet-200 bg-violet-50', iconTone: 'bg-violet-600 text-white', buttonTone: 'bg-violet-600 text-white hover:bg-violet-500' }
+              ].map((option) => {
+                const Icon = option.icon;
+                return (
+                  <div key={option.title} className={`rounded-2xl border p-4 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition ${option.tone}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${option.iconTone}`}><Icon className="w-5 h-5" /></div>
+                    <h3 className="mt-3 text-sm font-extrabold text-slate-950">{option.title}</h3>
+                    <p className="mt-1 min-h-10 text-xs leading-relaxed text-slate-600">{option.description}</p>
+                    <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-slate-500">{option.meta}</p>
+                    <button onClick={option.action} className={`mt-3 w-full rounded-xl px-3 py-2 text-xs font-bold transition ${option.buttonTone}`}>
+                      Open option <ArrowRight className="ml-1 inline-block w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700">
-                    2-Hour Arrival Slot
-                  </span>
-                </div>
-
-                <h3 className="font-extrabold text-slate-950 text-base">Schedule at Your Convenience</h3>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Select your preferred day and exact time window. Compare rate cards, reviews, and verified credentials.
-                </p>
-              </div>
-
-              <button
-                onClick={() => onNavigate('discovery')}
-                className="mt-4 w-full py-2.5 rounded-xl bg-slate-100 text-slate-900 font-bold text-xs hover:bg-slate-200 transition flex items-center justify-center gap-1.5"
-              >
-                <span>Browse All Rate Cards</span>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
-              </button>
+                );
+              })}
             </div>
           </div>
         </div>

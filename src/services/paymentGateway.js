@@ -50,7 +50,11 @@ export const initiateRazorpayPayment = async ({
   onFailure
 }) => {
   const isLoaded = await loadRazorpayScript();
-  const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag';
+  const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
+  if (!RAZORPAY_KEY) {
+    if (onFailure) onFailure('Secure payment is not configured yet');
+    return false;
+  }
 
   if (!isLoaded || !window.Razorpay) {
     if (onFailure) onFailure('Razorpay SDK could not be initialized');

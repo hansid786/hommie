@@ -30,6 +30,7 @@ import {
   submitOnSiteQuote,
   subscribeHommieState
 } from '../../services/hommieState';
+import LiveBookingTracker from '../LiveBookingTracker';
 
 export default function ProfessionalDashboardView({
   proId = 'pro-arjun',
@@ -110,7 +111,7 @@ export default function ProfessionalDashboardView({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-16">
       {/* 1. Pro Header Bar & Availability Toggle */}
-      <div className="bg-slate-900 text-white border-b border-slate-800">
+      <div className="bg-gradient-to-br from-slate-950 via-teal-950 to-emerald-950 text-white border-b border-emerald-800/50 shadow-xl shadow-teal-950/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -320,18 +321,22 @@ export default function ProfessionalDashboardView({
                   </div>
                 </div>
 
+                <div className="mb-5">
+                  <LiveBookingTracker booking={activeJob} role="worker" />
+                </div>
+
                 {/* Location & Instructions */}
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-white font-bold">{activeJob.address?.formattedAddress || 'Indiranagar 100ft Road, Bengaluru'}</span>
+                      <span className="text-white font-bold">{activeJob.address?.formattedAddress || 'Gomti Nagar, Lucknow'}</span>
                       <p className="text-slate-400 text-[11px] mt-0.5">Special note: "{activeJob.notes || 'Please call before ringing bell.'}"</p>
                     </div>
                   </div>
 
                   <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(activeJob.address?.formattedAddress || 'Indiranagar Bengaluru')}`}
+                    href={`https://maps.google.com/?q=${activeJob.address?.lat && activeJob.address?.lng ? `${activeJob.address.lat},${activeJob.address.lng}` : encodeURIComponent(activeJob.address?.formattedAddress || 'Gomti Nagar Lucknow')}`}
                     target="_blank"
                     rel="noreferrer"
                     className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition inline-flex items-center gap-1.5 shrink-0"

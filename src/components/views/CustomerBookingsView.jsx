@@ -22,6 +22,7 @@ import {
   cancelBooking,
   subscribeHommieState
 } from '../../services/hommieState';
+import LiveBookingTracker from '../LiveBookingTracker';
 
 const STATUS_CONFIG = {
   draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700' },
@@ -86,7 +87,7 @@ export default function CustomerBookingsView({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-16">
+    <div className="min-h-screen bg-[#f4f7fb] text-slate-900 pb-24 md:pb-16">
       {/* Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -170,7 +171,7 @@ export default function CustomerBookingsView({
               return (
                 <div
                   key={booking.id}
-                  className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition overflow-hidden"
+                  className="bg-white rounded-[1.5rem] border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition overflow-hidden"
                 >
                   {/* Top Bar: Booking Ref, Status & Date */}
                   <div className="bg-slate-50/80 px-6 py-3.5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
@@ -193,6 +194,7 @@ export default function CustomerBookingsView({
 
                   {/* Body Content */}
                   <div className="p-6">
+                    <LiveBookingTracker booking={booking} role="customer" />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Column 1: Service & Pro Details */}
                       <div className="md:col-span-2 space-y-4">

@@ -122,8 +122,8 @@ export const apiRegister = async (userData) => {
       rateUnit: 'visit',
       isAvailableNow: true,
       serviceRadiusKm: 10,
-      city: userData.city || 'Bengaluru',
-      locality: userData.locality || 'Koramangala',
+      city: userData.city || 'Lucknow',
+      locality: userData.locality || 'Gomti Nagar',
       locationLat: 12.9352,
       locationLng: 77.6245,
       distanceKm: '0.8 km away',
@@ -187,15 +187,15 @@ export const apiRegister = async (userData) => {
     email: userData.email,
     avatar: userData.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
     role: 'customer',
-    city: userData.city || 'Bengaluru',
-    locality: userData.locality || 'Koramangala',
+    city: userData.city || 'Lucknow',
+    locality: userData.locality || 'Gomti Nagar',
     savedAddresses: [
       {
         id: `addr-${Date.now()}`,
         label: 'Home',
         addressLine1: userData.address || 'Flat 101, Main Road',
-        locality: userData.locality || 'Koramangala',
-        city: userData.city || 'Bengaluru',
+        locality: userData.locality || 'Gomti Nagar',
+        city: userData.city || 'Lucknow',
         postalCode: '560034',
         isDefault: true
       }
