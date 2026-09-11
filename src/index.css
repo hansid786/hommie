@@ -10,6 +10,10 @@
     --line: #dfe7e3;
   }
 
+  html {
+    background-color: var(--canvas);
+  }
+
   body {
     background-color: var(--canvas);
     color: var(--brand-primary);

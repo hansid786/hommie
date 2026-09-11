@@ -22,8 +22,6 @@ import {
   cancelBooking,
   subscribeHommieState
 } from '../../services/hommieState';
-import LiveBookingTracker from '../LiveBookingTracker';
-
 const STATUS_CONFIG = {
   draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700' },
   broadcasted: { label: 'Matching Pros', color: 'bg-amber-100 text-amber-800' },
@@ -95,7 +93,7 @@ export default function CustomerBookingsView({
             <div>
               <h1 className="text-2xl font-extrabold text-slate-950">My Bookings & Service Visits</h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Real-time tracking, on-site quotes, direct payments, and 30-day warranty records
+                Clear booking updates, on-site quotes, secure payments, and 30-day warranty records
               </p>
             </div>
 
@@ -194,7 +192,14 @@ export default function CustomerBookingsView({
 
                   {/* Body Content */}
                   <div className="p-6">
-                    <LiveBookingTracker booking={booking} role="customer" />
+                    <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+                      <div>
+                        <p className="text-xs font-extrabold text-slate-900">Service address</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-600">Your saved address is shared with the assigned professional for this visit. HOMMIE does not use live location tracking.</p>
+                        {booking.address?.formattedAddress && <p className="mt-2 text-xs font-bold text-slate-800">{booking.address.formattedAddress}</p>}
+                      </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Column 1: Service & Pro Details */}
                       <div className="md:col-span-2 space-y-4">
