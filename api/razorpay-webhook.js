@@ -10,22 +10,21 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || 'rzp_test_secret_12345';
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
   const signature = req.headers['x-razorpay-signature'];
+  if (!webhookSecret || !signature) return res.status(503).json({ error: 'Razorpay webhook is not configured' });
 
-  // Verify HMAC SHA256 Signature
-  const shasum = crypto.createHmac('sha256', webhookSecret);
-  shasum.update(JSON.stringify(req.body));
-  const digest = shasum.digest('hex');
-
-  if (digest !== signature && webhookSecret !== 'rzp_test_secret_12345') {
+  const expected = crypto.createHmac('sha256', webhookSecret).update(JSON.stringify(req.body)).digest('hex');
+  const expectedBuffer = Buffer.from(expected, 'utf8');
+  const signatureBuffer = Buffer.from(String(signature), 'utf8');
+  if (expectedBuffer.length !== signatureBuffer.length || !crypto.timingSafeEqual(expectedBuffer, signatureBuffer)) {
     return res.status(400).json({ error: 'Invalid Webhook Signature' });
   }
 
   const event = req.body.event;
   const payload = req.body.payload;
 
-  console.log(`[Razorpay Webhook Received]: ${event}`);
+  console.info(`[Razorpay Webhook Received]: ${event}`);
 
   if (event === 'payment.captured') {
     const payment = payload.payment.entity;
