@@ -289,42 +289,6 @@ export default function CustomerHomeView({
               <span className="text-2xl font-black text-emerald-400 block">100% Verified</span>
               <span className="text-[11px] text-slate-400 font-medium">Aadhaar & Police Background</span>
             </div>
-<<<<<<< HEAD
-          </form>
-
-          {/* 2. Clear service paths */}
-          <div className="mt-8 max-w-5xl">
-            <div className="flex items-end justify-between gap-3 mb-4">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">What do you need today?</p>
-                <h2 className="mt-1 text-lg sm:text-xl font-extrabold text-slate-950">Choose the right way to get help</h2>
-              </div>
-              <button onClick={() => onNavigate('discovery')} className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-950">
-                See all services <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {[
-                { icon: Zap, title: 'Emergency help', description: 'Get a nearby pro for urgent repairs.', meta: '15–30 min arrival', action: () => onNavigate('discovery', { urgent: true }), tone: 'border-amber-300 bg-amber-50', iconTone: 'bg-amber-500 text-slate-950', buttonTone: 'bg-amber-500 text-slate-950 hover:bg-amber-400' },
-                { icon: Calendar, title: 'Book for later', description: 'Pick a date and convenient time slot.', meta: 'Flexible scheduling', action: () => onNavigate('discovery'), tone: 'border-sky-200 bg-sky-50', iconTone: 'bg-sky-600 text-white', buttonTone: 'bg-sky-600 text-white hover:bg-sky-500' },
-                { icon: Users, title: 'Browse professionals', description: 'Compare profiles, prices, and reviews.', meta: `${featuredPros.length || 0}+ local pros`, action: () => onNavigate('discovery'), tone: 'border-emerald-200 bg-emerald-50', iconTone: 'bg-emerald-600 text-white', buttonTone: 'bg-emerald-600 text-white hover:bg-emerald-500' },
-                { icon: CheckCircle2, title: 'Track my booking', description: 'See updates, quotes, and payment status.', meta: `${activeBookings.length} active booking${activeBookings.length === 1 ? '' : 's'}`, action: () => onNavigate('bookings'), tone: 'border-violet-200 bg-violet-50', iconTone: 'bg-violet-600 text-white', buttonTone: 'bg-violet-600 text-white hover:bg-violet-500' }
-              ].map((option) => {
-                const Icon = option.icon;
-                return (
-                  <div key={option.title} className={`rounded-2xl border p-4 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition ${option.tone}`}>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${option.iconTone}`}><Icon className="w-5 h-5" /></div>
-                    <h3 className="mt-3 text-sm font-extrabold text-slate-950">{option.title}</h3>
-                    <p className="mt-1 min-h-10 text-xs leading-relaxed text-slate-600">{option.description}</p>
-                    <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-slate-500">{option.meta}</p>
-                    <button onClick={option.action} className={`mt-3 w-full rounded-xl px-3 py-2 text-xs font-bold transition ${option.buttonTone}`}>
-                      Open option <ArrowRight className="ml-1 inline-block w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                );
-              })}
-=======
             <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
               <span className="text-2xl font-black text-amber-400 block">30-Day</span>
               <span className="text-[11px] text-slate-400 font-medium">Free Rework Warranty</span>
@@ -332,7 +296,6 @@ export default function CustomerHomeView({
             <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
               <span className="text-2xl font-black text-emerald-400 block">95% Payout</span>
               <span className="text-[11px] text-slate-400 font-medium">Direct to Skilled Workers</span>
->>>>>>> 6340263 (feat(customer-ui): polish customer home view with high-converting sleek commercial styling)
             </div>
           </div>
         </div>
