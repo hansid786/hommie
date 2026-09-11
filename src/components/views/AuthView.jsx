@@ -95,18 +95,24 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   return (
     <div className="min-h-[85vh] flex flex-col justify-center items-center py-8 px-4 font-['Plus_Jakarta_Sans',sans-serif]">
       
-      {/* Brand & Editorial Headline */}
-      <div className="max-w-md w-full text-center space-y-2 mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-          <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-          <span>Hyperlocal Services Marketplace • Lucknow / Bengaluru</span>
+      {/* HOMMIE brand and entry point */}
+      <div className="max-w-md w-full text-center space-y-3 mb-7">
+        <div className="mx-auto inline-flex items-center gap-2.5">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <HeartHandshake className="w-6 h-6" />
+          </div>
+          <span className="text-3xl font-black tracking-[-0.06em] text-slate-950">hommie</span>
+        </div>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Trusted home services in Lucknow</span>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          {mode === 'login' ? 'Welcome to your account' : 'Join as a Customer or Partner'}
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          {mode === 'login' ? 'Welcome back to hommie' : 'Start your hommie journey'}
         </h1>
-        <p className="text-xs text-slate-500 font-normal">
-          Find the right professional. Right at your doorstep.
+        <p className="text-xs text-slate-500 font-medium">
+          {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
         </p>
       </div>
 
