@@ -1,13 +1,29 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { HOMMIE_SEED_CUSTOMER } from '../data/hommieData';
 import { apiLogin, apiRegister } from '../services/api';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 
 const AUTH_STORAGE_KEY = 'hommie_auth_user_v1';
 const AuthContext = createContext(null);
 
+const normalizeIdentifier = (value = '') => value.trim();
+
+const getUserFromSupabase = (authUser) => {
+  const metadata = authUser.user_metadata || {};
+  const appMetadata = authUser.app_metadata || {};
+  const role = appMetadata.role || metadata.role || 'customer';
+  return {
+    id: authUser.id,
+    email: authUser.email,
+    name: metadata.fullName || metadata.name || authUser.email?.split('@')[0] || 'Hommie user',
+    role: role === 'professional' ? 'worker' : role,
+    phone: metadata.phone || authUser.phone || '',
+    avatar: metadata.avatar || ''
+  };
+};
+
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
+    if (isSupabaseConfigured) return null;
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
       return stored ? JSON.parse(stored) : null;
@@ -17,6 +33,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const authRequestRef = React.useRef(0);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
@@ -25,37 +42,39 @@ export const AuthProvider = ({ children }) => {
     }
 
     let active = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (active && data.user) {
-        const metadata = data.user.user_metadata || {};
-        setCurrentUser({
-          id: data.user.id,
-          email: data.user.email,
-          name: metadata.fullName || metadata.name || data.user.email?.split('@')[0],
-          role: metadata.role === 'professional' ? 'worker' : (metadata.role || 'customer'),
-          phone: metadata.phone || '',
-          avatar: metadata.avatar || ''
-        });
+    const initializeAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        if (active && data.user) {
+          setCurrentUser(getUserFromSupabase(data.user));
+        } else if (active && authRequestRef.current === 0) {
+          setCurrentUser(null);
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+      } catch (error) {
+        console.error('[v0] Auth initialization failed:', error);
+        if (active) {
+          setCurrentUser(null);
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+      } finally {
+        if (active) setIsLoading(false);
       }
-      if (active) setIsLoading(false);
-    });
+    };
+    initializeAuth();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
       if (!session?.user) {
-        setCurrentUser(null);
-        localStorage.removeItem(AUTH_STORAGE_KEY);
+        if (authRequestRef.current === 0) {
+          setCurrentUser(null);
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+          setIsLoading(false);
+        }
         return;
       }
-      const metadata = session.user.user_metadata || {};
-      const nextUser = {
-        id: session.user.id,
-        email: session.user.email,
-        name: metadata.fullName || metadata.name || session.user.email?.split('@')[0],
-        role: metadata.role === 'professional' ? 'worker' : (metadata.role || 'customer'),
-        phone: metadata.phone || '',
-        avatar: metadata.avatar || ''
-      };
+      const nextUser = getUserFromSupabase(session.user);
       setCurrentUser(nextUser);
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
     });
@@ -67,11 +86,30 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (phoneOrEmail, password, roleHint = 'customer') => {
+    const requestId = ++authRequestRef.current;
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email: phoneOrEmail, password });
-        if (error) throw new Error('Invalid email or password');
+        const identifier = normalizeIdentifier(phoneOrEmail);
+        const normalizedPassword = password.trim();
+        const credentials = identifier.includes('@')
+          ? { email: identifier.toLowerCase(), password: normalizedPassword }
+          : { phone: identifier.replace(/[\s()-]/g, ''), password: normalizedPassword };
+        const signInRequest = supabase.auth.signInWithPassword(credentials);
+        const timeout = new Promise((_, reject) => {
+          window.setTimeout(() => reject(new Error('Sign-in is taking too long. Check your connection and try again.')), 12000);
+        });
+        const { data, error } = await Promise.race([signInRequest, timeout]);
+        if (error) {
+          const message = error.message?.toLowerCase() || '';
+          if (message.includes('email not confirmed')) {
+            throw new Error('Please confirm your email before signing in.');
+          }
+          if (message.includes('rate limit')) {
+            throw new Error('Too many attempts. Please wait a moment and try again.');
+          }
+          throw new Error('Invalid email/phone or password.');
+        }
         const metadata = data.user.user_metadata || {};
         const appMetadata = data.user.app_metadata || {};
         const user = {
@@ -91,7 +129,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
       return { success: true, user };
     } finally {
-      setIsLoading(false);
+      if (authRequestRef.current === requestId) {
+        authRequestRef.current = 0;
+        setIsLoading(false);
+      }
     }
   };
 

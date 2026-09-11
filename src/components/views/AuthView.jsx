@@ -28,6 +28,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
   const [trade, setTrade] = useState('AC Repair');
   const [locality, setLocality] = useState('Gomti Nagar, Lucknow');
   const [baseRate, setBaseRate] = useState('349');
@@ -38,10 +39,17 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setFormError('');
+
+    const identifier = loginIdentifier.trim();
+    if (!identifier || !password) {
+      setFormError('Enter your email or phone number and password to continue.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      setFormError('');
-      const res = await login(phone || email, password);
+      const res = await login(identifier, password);
       if (res.success) {
         showToast(`Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
@@ -86,17 +94,17 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <HeartHandshake className="w-6 h-6" />
           </div>
-          <span className="text-3xl font-black tracking-[-0.06em] text-slate-950">hommie</span>
+          <span className="text-3xl font-black tracking-[-0.06em] text-white">HOMMIE</span>
         </div>
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Trusted home services in Lucknow</span>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-          {mode === 'login' ? 'Welcome back to hommie' : 'Start your hommie journey'}
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your service journey'}
         </h1>
-        <p className="text-xs text-slate-500 font-medium">
+        <p className="text-xs text-slate-300 font-medium">
           {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
         </p>
       </div>
@@ -187,16 +195,17 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
               </div>
             )}
             <div>
-              <label className="font-bold text-slate-700 block mb-1">
-                {role === 'customer' ? 'Customer Mobile Number / Email' : 'Professional Registered Phone / Email'}
+              <label className="font-bold text-slate-700 block mb-1" htmlFor="login-identifier">
+                Email address or registered phone
               </label>
               <div className="relative">
                 <input
+                  id="login-identifier"
                   type="text"
                   required
-                  placeholder={role === 'customer' ? '98450 77123' : '98450 21984'}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="you@example.com or +91 98450 21984"
+                  value={loginIdentifier}
+                  onChange={(e) => setLoginIdentifier(e.target.value)}
                   className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-medium"
                 />
               </div>
@@ -204,12 +213,11 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
 
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="font-bold text-slate-700">Password / OTP Verification</label>
-                <span className="text-[11px] text-emerald-700 font-semibold cursor-pointer hover:underline">
-                  Login via OTP
-                </span>
+                <label className="font-bold text-slate-700" htmlFor="login-password">Password</label>
+                <span className="text-[11px] text-slate-400 font-semibold">Secure sign-in</span>
               </div>
               <input
+                id="login-password"
                 type="password"
                 required
                 minLength={8}

@@ -27,11 +27,12 @@ import QuoteApprovalModal from './components/Modals/QuoteApprovalModal';
 import HommiePaymentModal from './components/Modals/HommiePaymentModal';
 import HommieRatingModal from './components/Modals/HommieRatingModal';
 import SafetyReportModal from './components/Modals/SafetyReportModal';
+import AppErrorBoundary from './components/AppErrorBoundary';
 
 import { getActiveLocality, getActiveCity, subscribeHommieState } from './services/hommieState';
 
 function HommieMainApp() {
-  const { currentUser, role } = useAuth();
+  const { currentUser, role, isLoading } = useAuth();
 
   // Navigation State
   const [currentView, setCurrentView] = useState(() => {
@@ -87,6 +88,17 @@ function HommieMainApp() {
       setCurrentView('home');
     }
   }, [role]);
+
+  if (isLoading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f6f8f7] px-6 text-[#132238]">
+        <div className="text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#132238] text-xl font-black text-white">H</div>
+          <p className="mt-4 text-sm font-bold text-slate-600">Securing your HOMMIE session...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!currentUser) {
     return <AuthView onSuccess={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />;
@@ -335,10 +347,12 @@ function HommieMainApp() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <HommieMainApp />
-      </NotificationProvider>
-    </AuthProvider>
+    <AppErrorBoundary>
+      <AuthProvider>
+        <NotificationProvider>
+          <HommieMainApp />
+        </NotificationProvider>
+      </AuthProvider>
+    </AppErrorBoundary>
   );
 }
