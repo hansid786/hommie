@@ -31,10 +31,10 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
   });
 
   return (
-    <div className="space-y-6 my-6">
+    <div className="space-y-8 my-6">
       
       {/* Customer Discovery Hero */}
-      <div className="bg-gradient-to-r from-indigo-900 via-blue-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-700/40 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#102a43] via-[#164e63] to-[#0f766e] text-white rounded-[2rem] p-6 sm:p-8 shadow-xl border border-teal-700/40 relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
@@ -108,7 +108,7 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
           {filteredWorkers.map((w) => (
             <div
               key={w.id}
-              className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-blue-400 transition-all p-5 flex flex-col justify-between"
+              className="bg-white rounded-[1.5rem] border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-teal-300 transition-all p-5 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-3">

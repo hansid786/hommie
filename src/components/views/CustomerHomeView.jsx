@@ -104,7 +104,7 @@ export default function CustomerHomeView({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900 pb-24 md:pb-16 font-sans">
+    <div className="min-h-screen bg-[#f4f7fb] text-slate-900 pb-24 md:pb-16 font-sans">
       {/* 1. HERO SECTION */}
       <section className="relative bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent pt-6 sm:pt-10 pb-12 px-4 sm:px-6 lg:px-8 border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto">
