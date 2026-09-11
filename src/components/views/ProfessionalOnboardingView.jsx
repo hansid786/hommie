@@ -25,7 +25,7 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
   const [trade, setTrade] = useState('AC Service & Repair');
   const [selectedCategories, setSelectedCategories] = useState(['ac-service']);
   const [experienceYears, setExperienceYears] = useState(5);
-  const [city, setCity] = useState('Bengaluru');
+  const [city, setCity] = useState('Lucknow');
   const [primaryLocality, setPrimaryLocality] = useState('Indiranagar');
   const [baseRate, setBaseRate] = useState(499);
   const [aadhaarNumber, setAadhaarNumber] = useState('');
@@ -55,7 +55,7 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
       experienceYears: Number(experienceYears),
       city,
       primaryLocality,
-      serviceLocalities: [primaryLocality, 'Koramangala', 'HSR Layout'],
+      serviceLocalities: [primaryLocality, 'Gomti Nagar', 'Hazratganj', 'Aliganj'],
       baseRate: Number(baseRate),
       about: about || `Experienced ${trade} with ${experienceYears} years of work across ${city}.`,
       upiId: upiId || `${phone}@upi`,
@@ -223,7 +223,6 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
                     onChange={(e) => setCity(e.target.value)}
                     className="mt-1 w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500"
                   >
-                    <option value="Bengaluru">Bengaluru</option>
                     <option value="Lucknow">Lucknow</option>
                   </select>
                 </div>
@@ -233,7 +232,7 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Indiranagar, Koramangala, Gomti Nagar"
+                    placeholder="e.g. Gomti Nagar, Hazratganj, Aliganj"
                     value={primaryLocality}
                     onChange={(e) => setPrimaryLocality(e.target.value)}
                     className="mt-1 w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500"

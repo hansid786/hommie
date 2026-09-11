@@ -129,9 +129,6 @@ export default function HomeView({
                     className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer pr-1"
                   >
                     <option value="Lucknow">Lucknow</option>
-                    <option value="Bengaluru">Bengaluru</option>
-                    <option value="Delhi NCR">Delhi NCR</option>
-                    <option value="Mumbai">Mumbai</option>
                   </select>
                 </div>
 

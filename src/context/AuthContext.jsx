@@ -5,17 +5,7 @@ import { apiLogin, apiRegister } from '../services/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hommie_auth_user_v1');
-      if (!saved) return null;
-      const user = JSON.parse(saved);
-      const role = user.role === 'professional' ? 'worker' : user.role;
-      return { ...user, role };
-    } catch (e) {
-      return null;
-    }
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
 

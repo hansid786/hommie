@@ -116,7 +116,7 @@ export default function CustomerHomeView({
             >
               <MapPin className="w-4 h-4 text-amber-600 shrink-0" />
               <span>
-                Sector: <strong className="text-slate-950">{activeLocality?.name || 'Indiranagar'}</strong>, {activeCity?.name || 'Bengaluru'}
+                Sector: <strong className="text-slate-950">{activeLocality?.name || 'Gomti Nagar'}</strong>, {activeCity?.name || 'Lucknow'}
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             </button>
