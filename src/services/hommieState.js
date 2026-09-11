@@ -21,7 +21,8 @@ const STORAGE_KEYS = {
   BOOKINGS: 'hommie_bookings_v1',
   AUDIT_LOGS: 'hommie_audit_logs_v1',
   DISPUTES: 'hommie_disputes_v1',
-  SAFETY_REPORTS: 'hommie_safety_reports_v1'
+  SAFETY_REPORTS: 'hommie_safety_reports_v1',
+  CUSTOMER_SERVICE_ADDRESS: 'hommie_customer_service_address_v1'
 };
 
 // Safe localStorage loader with seed fallback
@@ -56,6 +57,15 @@ let _auditLogs = loadFromStorage(STORAGE_KEYS.AUDIT_LOGS, [
 ]);
 let _disputes = loadFromStorage(STORAGE_KEYS.DISPUTES, []);
 let _safetyReports = loadFromStorage(STORAGE_KEYS.SAFETY_REPORTS, []);
+let _customerServiceAddress = loadFromStorage(STORAGE_KEYS.CUSTOMER_SERVICE_ADDRESS, {
+  flatNo: '',
+  street: '',
+  landmark: '',
+  locality: _customer?.activeLocality || 'Gomti Nagar',
+  city: _customer?.city || 'Lucknow',
+  pincode: '',
+  formattedAddress: ''
+});
 
 // Listeners for reactivity
 const listeners = new Set();
@@ -94,6 +104,26 @@ export function setCustomerLocality(cityName, localityName) {
     recordAuditLog('Customer location updated to ' + localityName + ', ' + cityName, 'Customer');
     notifyStateChanged();
   }
+}
+
+export function getCustomerServiceAddress() {
+  return _customerServiceAddress;
+}
+
+export function setCustomerServiceAddress(address) {
+  const nextAddress = {
+    ..._customerServiceAddress,
+    ...address,
+    city: address.city || _customer?.city || 'Lucknow',
+    locality: address.locality || _customer?.activeLocality || 'Gomti Nagar'
+  };
+  nextAddress.formattedAddress = [nextAddress.flatNo, nextAddress.street, nextAddress.landmark && `Near ${nextAddress.landmark}`, nextAddress.locality, nextAddress.city, nextAddress.pincode].filter(Boolean).join(', ');
+  _customerServiceAddress = nextAddress;
+  setCustomerLocality(nextAddress.city, nextAddress.locality);
+  saveToStorage(STORAGE_KEYS.CUSTOMER_SERVICE_ADDRESS, _customerServiceAddress);
+  recordAuditLog('Exact service address saved for future bookings', 'Customer');
+  notifyStateChanged();
+  return _customerServiceAddress;
 }
 
 export function checkCategoryServiceability(categorySlug, localityName) {
@@ -273,7 +303,7 @@ export function createBooking(payload) {
         note: pro.name + ' accepted service dispatch'
       }
     ],
-    address: payload.address || {
+    address: payload.address || (_customerServiceAddress.formattedAddress ? _customerServiceAddress : {
       flatNo: 'Flat 302, Palm Heights',
       street: '12th Main Road',
       locality: _customer?.activeLocality || 'Gomti Nagar',
@@ -282,7 +312,7 @@ export function createBooking(payload) {
       lat: null,
       lng: null,
       formattedAddress: 'Flat 302, Palm Heights, Gomti Nagar, Lucknow - 226010'
-    },
+    }),
     notes: payload.notes || 'Please ring bell upon arrival',
     safetyGuidelinesAcknowledged: true,
     pricingSummary: {
