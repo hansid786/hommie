@@ -91,7 +91,11 @@ export const AuthProvider = ({ children }) => {
         const credentials = identifier.includes('@')
           ? { email: identifier.toLowerCase(), password: normalizedPassword }
           : { phone: identifier.replace(/[\s()-]/g, ''), password: normalizedPassword };
-        const { data, error } = await supabase.auth.signInWithPassword(credentials);
+        const signInRequest = supabase.auth.signInWithPassword(credentials);
+        const timeout = new Promise((_, reject) => {
+          window.setTimeout(() => reject(new Error('Sign-in is taking too long. Check your connection and try again.')), 12000);
+        });
+        const { data, error } = await Promise.race([signInRequest, timeout]);
         if (error) {
           const message = error.message?.toLowerCase() || '';
           if (message.includes('email not confirmed')) {

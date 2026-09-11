@@ -39,10 +39,17 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setFormError('');
+
+    const identifier = loginIdentifier.trim();
+    if (!identifier || !password) {
+      setFormError('Enter your email or phone number and password to continue.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      setFormError('');
-      const res = await login(loginIdentifier, password);
+      const res = await login(identifier, password);
       if (res.success) {
         showToast(`Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
@@ -87,17 +94,17 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <HeartHandshake className="w-6 h-6" />
           </div>
-          <span className="text-3xl font-black tracking-[-0.06em] text-slate-950">hommie</span>
+          <span className="text-3xl font-black tracking-[-0.06em] text-white">Doorstep Pro Services</span>
         </div>
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Trusted home services in Lucknow</span>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-          {mode === 'login' ? 'Welcome back to hommie' : 'Start your hommie journey'}
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          {mode === 'login' ? 'Welcome back to Doorstep Pro Services' : 'Start your service journey'}
         </h1>
-        <p className="text-xs text-slate-500 font-medium">
+        <p className="text-xs text-slate-300 font-medium">
           {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
         </p>
       </div>
@@ -205,12 +212,11 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
 
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="font-bold text-slate-700">Password / OTP Verification</label>
-                <span className="text-[11px] text-emerald-700 font-semibold cursor-pointer hover:underline">
-                  Login via OTP
-                </span>
+                <label className="font-bold text-slate-700" htmlFor="login-password">Password</label>
+                <span className="text-[11px] text-slate-400 font-semibold">Secure sign-in</span>
               </div>
               <input
+                id="login-password"
                 type="password"
                 required
                 minLength={8}
