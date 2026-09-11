@@ -44,7 +44,7 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
             Book Verified Local Karigars with Zero Commission Markup
           </h1>
           <p className="text-blue-100 text-sm mt-2">
-            Corporate apps add 30% hidden margins and charge workers lead fees. On <strong>Gig Work</strong>, 95%+ of what you pay goes straight to your local electrician, plumber, cleaner or carpenter.
+            Get transparent pricing and trusted local help without the usual marketplace markup. On <strong>Hommie</strong>, your booking supports the professional who serves your neighborhood.
           </p>
 
           {/* Search Box in Hero */}
@@ -75,8 +75,23 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
         </div>
       </div>
 
+      {/* Trust signals */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { value: '100%', label: 'Verified professionals', tone: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
+          { value: '4.8/5', label: 'Average local rating', tone: 'text-amber-700 bg-amber-50 border-amber-100' },
+          { value: '30 days', label: 'Service warranty', tone: 'text-blue-700 bg-blue-50 border-blue-100' },
+          { value: '0%', label: 'Hidden booking fees', tone: 'text-indigo-700 bg-indigo-50 border-indigo-100' }
+        ].map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border px-4 py-3 ${stat.tone}`}>
+            <p className="text-lg sm:text-xl font-black tracking-tight">{stat.value}</p>
+            <p className="text-[11px] font-semibold opacity-80 mt-0.5">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Verified Local Workers Grid */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-6">
           <div>
             <h2 className="text-xl font-extrabold text-slate-900">Nearby Verified Workers in Your Ward</h2>
