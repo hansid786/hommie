@@ -129,7 +129,7 @@ function HommieMainApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-amber-400 selection:text-slate-950">
+    <div className="min-h-screen flex flex-col bg-[#f6f8f7] text-[#132238] font-sans selection:bg-amber-200 selection:text-[#132238]">
       {/* 1. TOP NAVBAR */}
       <HommieNavbar
         activeLocality={activeLocality}

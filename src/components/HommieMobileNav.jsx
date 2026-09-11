@@ -11,7 +11,7 @@ export default function HommieMobileNav({ currentView, onNavigate }) {
   );
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/80 px-2 py-2 flex items-center justify-around shadow-lg">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 px-2 py-2.5 flex items-center justify-around shadow-[0_-8px_24px_rgba(19,34,56,0.08)]">
       {role === 'customer' && (
         <>
           <button
