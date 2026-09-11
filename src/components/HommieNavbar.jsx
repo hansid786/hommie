@@ -2,18 +2,9 @@ import React, { useState } from 'react';
 import {
   MapPin,
   ChevronDown,
-  Search,
-  Zap,
   Calendar,
   Home,
-  Briefcase,
-  ShieldCheck,
-  User,
-  SlidersHorizontal,
-  Bell,
-  Clock,
-  ArrowRight,
-  Sparkles
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getActiveCity, getActiveLocality, getBookings } from '../services/hommieState';
@@ -23,11 +14,9 @@ export default function HommieNavbar({
   onNavigate,
   currentView
 }) {
-  const { user, role, switchRole } = useAuth();
+  const { role } = useAuth();
   const activeCity = getActiveCity();
   const activeLocality = getActiveLocality();
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-
   const bookings = getBookings();
   const activeBooking = bookings.find((b) =>
     !['completed', 'cancelled_by_customer', 'cancelled_by_pro'].includes(b.status)
@@ -134,95 +123,11 @@ export default function HommieNavbar({
             </button>
           )}
 
-          {/* Role Switcher Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-800 transition"
-            >
-              <div className="w-6 h-6 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs">
-                {role === 'customer' ? 'C' : role === 'worker' ? 'P' : 'A'}
-              </div>
-              <div className="hidden sm:block text-left">
-                <span className="block text-[11px] font-extrabold capitalize leading-none">
-                  {role === 'worker' ? 'Pro Mode' : role === 'admin' ? 'Admin Ops' : 'Customer'}
-                </span>
-                <span className="text-[9px] text-slate-500">Switch Role</span>
-              </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
-            </button>
-
-            {isRoleDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-2 border-b border-slate-100">
-                  <span className="text-[10px] uppercase font-bold text-slate-400">Current Role</span>
-                  <p className="text-xs font-extrabold text-slate-900 capitalize">{role}</p>
-                </div>
-
-                <button
-                  onClick={() => {
-                    switchRole('customer');
-                    setIsRoleDropdownOpen(false);
-                    onNavigate('home');
-                  }}
-                  className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between hover:bg-slate-50 ${
-                    role === 'customer' ? 'text-amber-700 font-bold bg-amber-50/50' : 'text-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-slate-500" />
-                    <span>Customer App</span>
-                  </div>
-                  {role === 'customer' && <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
-                </button>
-
-                <button
-                  onClick={() => {
-                    switchRole('worker');
-                    setIsRoleDropdownOpen(false);
-                    onNavigate('pro-dashboard');
-                  }}
-                  className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between hover:bg-slate-50 ${
-                    role === 'worker' ? 'text-amber-700 font-bold bg-amber-50/50' : 'text-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-slate-500" />
-                    <span>Professional Portal</span>
-                  </div>
-                  {role === 'worker' && <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
-                </button>
-
-                <button
-                  onClick={() => {
-                    switchRole('admin');
-                    setIsRoleDropdownOpen(false);
-                    onNavigate('admin');
-                  }}
-                  className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between hover:bg-slate-50 ${
-                    role === 'admin' ? 'text-amber-700 font-bold bg-amber-50/50' : 'text-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-slate-500" />
-                    <span>Admin Operations</span>
-                  </div>
-                  {role === 'admin' && <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
-                </button>
-
-                <div className="pt-2 mt-1 border-t border-slate-100 px-3">
-                  <button
-                    onClick={() => {
-                      setIsRoleDropdownOpen(false);
-                      onNavigate('pro-onboarding');
-                    }}
-                    className="w-full py-1.5 rounded-xl bg-slate-900 text-white text-[11px] font-bold text-center block hover:bg-slate-800"
-                  >
-                    + Join as Professional
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-800">
+            <div className="w-6 h-6 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs">
+              {role === 'worker' ? 'P' : role === 'admin' ? 'A' : 'C'}
+            </div>
+            <span>{role === 'worker' ? 'Professional' : role === 'admin' ? 'Operations' : 'Customer'}</span>
           </div>
         </div>
       </div>

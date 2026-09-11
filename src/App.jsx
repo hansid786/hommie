@@ -94,6 +94,24 @@ function HommieMainApp() {
 
   // Navigation Helper
   const navigateTo = (view, params = {}) => {
+    const customerOnlyViews = ['home', 'customer-dashboard', 'discovery', 'pro-profile', 'my-home', 'bookings'];
+    const roleViews = {
+      customer: customerOnlyViews,
+      worker: ['pro-dashboard', 'pro-onboarding'],
+      professional: ['pro-dashboard', 'pro-onboarding'],
+      admin: ['admin']
+    };
+    const allowedViews = roleViews[role] || customerOnlyViews;
+    if (!allowedViews.includes(view)) {
+      const defaultView = role === 'admin'
+        ? 'admin'
+        : role === 'worker' || role === 'professional'
+          ? 'pro-dashboard'
+          : 'customer-dashboard';
+      setCurrentView(defaultView);
+      return;
+    }
+
     setViewParams(params);
     if (view === 'pro-profile' && params.proId) {
       setSelectedProId(params.proId);
