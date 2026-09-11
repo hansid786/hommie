@@ -29,7 +29,7 @@ import SafetyReportModal from './components/Modals/SafetyReportModal';
 import { getActiveLocality, getActiveCity, getBookingById, subscribeHommieState } from './services/hommieState';
 
 function HommieMainApp() {
-  const { user, role, switchRole } = useAuth();
+  const { currentUser, role, switchRole } = useAuth();
   
   // Navigation State
   const [currentView, setCurrentView] = useState('home'); // home, discovery, pro-profile, my-home, bookings, pro-dashboard, pro-onboarding, admin
@@ -73,7 +73,7 @@ function HommieMainApp() {
 
   // Sync role view changes
   useEffect(() => {
-    if (role === 'worker') {
+    if (role === 'worker' || role === 'professional') {
       setCurrentView('pro-dashboard');
     } else if (role === 'admin') {
       setCurrentView('admin');
@@ -191,7 +191,7 @@ function HommieMainApp() {
 
         {currentView === 'pro-dashboard' && (
           <ProfessionalDashboardView
-            proId={user?.workerId || 'pro-arjun'}
+            proId={currentUser?.proId || currentUser?.workerId || 'pro-arjun'}
             onOpenChatModal={handleOpenChat}
             onNavigate={navigateTo}
           />

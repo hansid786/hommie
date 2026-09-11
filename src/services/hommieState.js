@@ -77,7 +77,7 @@ export function getCities() {
 }
 
 export function getActiveCity() {
-  return _cities.find((c) => c.name === (_customer?.city || 'Bengaluru')) || _cities[0];
+  return _cities.find((c) => c.name === (_customer?.city || 'Lucknow')) || _cities.find((c) => c.name === 'Lucknow') || _cities[0];
 }
 
 export function getActiveLocality() {
