@@ -95,14 +95,14 @@ export default function LoginPage({ onLoginSuccess }) {
       
       {/* Top Brand Header */}
       <div className="max-w-md w-full mx-auto text-center space-y-2 mb-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-          <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-          <span>Hyperlocal Services Marketplace • Lucknow</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold">
+          <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+          <span>HOMMIE Hyperlocal Home Services</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Doorstep Pro Services
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          HOMMIE
         </h1>
-        <p className="text-xs text-slate-500">Find the right professional. Right at your doorstep.</p>
+        <p className="text-xs text-slate-500">Trusted skilled services, right at your doorstep.</p>
       </div>
 
       {/* Main Card */}
