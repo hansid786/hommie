@@ -37,8 +37,8 @@ function HommieMainApp() {
   const [currentView, setCurrentView] = useState(() => {
     if (role === 'worker' || role === 'professional') return 'pro-dashboard';
     if (role === 'admin') return 'admin';
-    return 'customer-dashboard';
-  }); // customer-dashboard, home, discovery, pro-profile, my-home, bookings, pro-dashboard, pro-onboarding, admin
+    return 'home';
+  }); // home, customer-dashboard, discovery, pro-profile, my-home, bookings, pro-dashboard, pro-onboarding, admin
   const [viewParams, setViewParams] = useState({});
 
   // Active locality state
@@ -84,7 +84,7 @@ function HommieMainApp() {
     } else if (role === 'admin') {
       setCurrentView('admin');
     } else if (role === 'customer' && (currentView === 'pro-dashboard' || currentView === 'admin')) {
-      setCurrentView('customer-dashboard');
+      setCurrentView('home');
     }
   }, [role]);
 

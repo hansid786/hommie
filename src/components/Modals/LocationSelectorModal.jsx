@@ -7,14 +7,23 @@ export default function LocationSelectorModal({ isOpen, onClose, activeLocality,
   const saved = getCustomerServiceAddress();
   const [selectedCityId, setSelectedCityId] = useState(activeCity?.id || 'lko');
   const [searchQuery, setSearchQuery] = useState('');
-  const [form, setForm] = useState(saved);
+  const [form, setForm] = useState(saved || {
+    flatNo: '',
+    pincode: '226010',
+    street: '',
+    landmark: '',
+    locality: 'Gomti Nagar',
+    city: 'Lucknow'
+  });
   if (!isOpen) return null;
   const currentCity = cities.find((city) => city.id === selectedCityId) || cities[0];
-  const localities = currentCity.localities.filter((loc) => loc.name.toLowerCase().includes(searchQuery.toLowerCase()) || loc.pincode.includes(searchQuery));
+  const localities = (currentCity?.localities || []).filter((loc) =>
+    (loc.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || (loc.pincode || '').includes(searchQuery)
+  );
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
   const save = (event) => {
     event.preventDefault();
-    if (!form.flatNo.trim() || !form.street.trim() || !form.pincode.trim()) return;
+    if (!form?.flatNo?.trim() || !form?.street?.trim() || !form?.pincode?.trim()) return;
     setCustomerServiceAddress({ ...form, city: currentCity.name });
     onClose();
   };

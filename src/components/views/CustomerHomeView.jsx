@@ -35,7 +35,8 @@ import {
   getActiveCity,
   getCustomerHomeAssets,
   getBookings,
-  getCustomerServiceAddress
+  getCustomerServiceAddress,
+  subscribeHommieState
 } from '../../services/hommieState';
 
 const categoryIcons = {
@@ -69,15 +70,16 @@ export default function CustomerHomeView({
   const [activeCity, setActiveCity] = useState(null);
   const [homeAssets, setHomeAssets] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
-  const [serviceAddress, setServiceAddress] = useState(getCustomerServiceAddress());
+  const [serviceAddress, setServiceAddress] = useState(getCustomerServiceAddress() || {});
   const [searchQuery, setSearchQuery] = useState('');
   const [openFaq, setOpenFaq] = useState(null);
 
-  useEffect(() => {
+  const refreshData = () => {
     setCategories(getCategories());
     setActiveLocality(getActiveLocality());
     setActiveCity(getActiveCity());
     setHomeAssets(getCustomerHomeAssets());
+    setServiceAddress(getCustomerServiceAddress() || {});
 
     const activeLoc = getActiveLocality();
     const pros = getProfessionals({
@@ -91,6 +93,12 @@ export default function CustomerHomeView({
       !['completed', 'cancelled_by_customer', 'cancelled_by_pro'].includes(b.status)
     );
     setActiveBookings(inFlight.slice(0, 1));
+  };
+
+  useEffect(() => {
+    refreshData();
+    const unsub = subscribeHommieState(refreshData);
+    return unsub;
   }, []);
 
   const handleSearchSubmit = (e) => {
@@ -139,9 +147,25 @@ export default function CustomerHomeView({
             </div>
           </div>
 
-          <div className="mt-6 max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3"><div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"><MapPin className="w-5 h-5" /></div><div><p className="text-[11px] font-black uppercase tracking-wider text-amber-700">Your service address</p><h2 className="mt-1 text-sm font-extrabold text-slate-950">{serviceAddress.formattedAddress || 'Add your exact home address'}</h2><p className="mt-1 text-xs text-slate-500">Shared only with the worker you book. No live location tracking.</p></div></div>
-            <button onClick={onOpenLocationModal} className="shrink-0 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-800 hover:border-amber-400 hover:text-amber-700">{serviceAddress.formattedAddress ? 'Edit' : 'Add address'}</button>
+          <div className="mb-6 max-w-2xl rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-3.5 sm:p-4 shadow-lg flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30">
+                <MapPin className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-wider text-amber-300">Exact Service Address</p>
+                <h2 className="text-xs sm:text-sm font-bold text-white truncate max-w-[240px] sm:max-w-md">
+                  {serviceAddress?.formattedAddress || 'Add your exact home / flat address'}
+                </h2>
+                <p className="text-[10px] text-slate-300 hidden sm:block">Shared securely only with your confirmed technician.</p>
+              </div>
+            </div>
+            <button
+              onClick={onOpenLocationModal}
+              className="shrink-0 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 px-3 py-1.5 text-xs font-bold text-slate-100 transition shadow-xs cursor-pointer"
+            >
+              {serviceAddress?.formattedAddress ? 'Change' : '+ Add Address'}
+            </button>
           </div>
 
           {/* Active In-Flight Order Floating Bar (if customer has an active booking) */}
