@@ -32,6 +32,8 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
   const [upiId, setUpiId] = useState('');
   const [about, setAbout] = useState('');
   const [submittedPro, setSubmittedPro] = useState(null);
+  const [formError, setFormError] = useState('');
+  const [kycDocument, setKycDocument] = useState(null);
 
   const handleCategoryToggle = (slug) => {
     if (selectedCategories.includes(slug)) {
@@ -43,8 +45,31 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
     }
   };
 
+  const handleCoverageContinue = () => {
+    if (!primaryLocality.trim()) {
+      setFormError('Enter the locality where you accept service visits.');
+      return;
+    }
+    if (Number(baseRate) < 99 || Number(baseRate) > 5000) {
+      setFormError('Choose a base rate between ₹99 and ₹5,000.');
+      return;
+    }
+    setFormError('');
+    setStep(3);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const normalizedAadhaar = aadhaarNumber.replace(/\s/g, '');
+    if (!/^\d{12}$/.test(normalizedAadhaar)) {
+      setFormError('Enter a valid 12-digit Aadhaar number.');
+      return;
+    }
+    if (!kycDocument) {
+      setFormError('Upload an Aadhaar document to continue.');
+      return;
+    }
+    setFormError('');
 
     const registered = registerNewProfessional({
       name,
@@ -277,7 +302,7 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
               </button>
               <button
                 type="button"
-                onClick={() => setStep(3)}
+                onClick={handleCoverageContinue}
                 className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition shadow-sm inline-flex items-center gap-2"
               >
                 <span>Continue to KYC</span>
@@ -308,11 +333,30 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
                 />
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-300 text-center">
+              <label className="block p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-300 text-center cursor-pointer hover:bg-amber-50 hover:border-amber-300 transition">
                 <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
                 <h4 className="text-xs font-bold text-slate-700">Upload Aadhaar Front & Back Photo</h4>
-                <p className="text-[11px] text-slate-400 mt-0.5">JPG, PNG or PDF up to 5MB (Simulated auto-verified for onboarding)</p>
-              </div>
+                <p className="text-[11px] text-slate-400 mt-0.5">JPG, PNG or PDF up to 5MB</p>
+                <input type="file" accept="image/jpeg,image/png,application/pdf" className="sr-only" onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 5 * 1024 * 1024) {
+                    setFormError('KYC document must be 5MB or smaller.');
+                    setKycDocument(null);
+                    return;
+                  }
+                  setFormError('');
+                  setKycDocument(file);
+                }} />
+                {kycDocument && <span className="block text-[11px] text-emerald-700 font-bold mt-2">{kycDocument.name} attached</span>}
+              </label>
+
+              {formError && (
+                <div role="alert" className="flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{formError}</span>
+                </div>
+              )}
 
               <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-950 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold">
