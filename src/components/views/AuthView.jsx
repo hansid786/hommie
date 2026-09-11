@@ -93,7 +93,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   };
 
   return (
-    <div className="min-h-[85vh] flex flex-col justify-center items-center py-8 px-4 font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen flex flex-col justify-center items-center py-8 px-4 bg-slate-950 font-sans">
       
       {/* HOMMIE brand and entry point */}
       <div className="max-w-md w-full text-center space-y-3 mb-7">
