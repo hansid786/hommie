@@ -32,17 +32,22 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   const [locality, setLocality] = useState('Gomti Nagar, Lucknow');
   const [baseRate, setBaseRate] = useState('349');
   const [experienceYears, setExperienceYears] = useState('6');
+  const [password, setPassword] = useState('');
+  const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await login(phone || email || '9845021984', 'password123', role);
+      setFormError('');
+      const res = await login(phone || email, password, role);
       if (res.success) {
         showToast(`Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
       }
+    } catch (error) {
+      setFormError(error.message || 'Unable to sign in. Please check your details.');
     } finally {
       setIsSubmitting(false);
     }
@@ -196,6 +201,11 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         {/* Form Body */}
         {mode === 'login' ? (
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
+            {formError && (
+              <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">
+                {formError}
+              </div>
+            )}
             <div>
               <label className="font-bold text-slate-700 block mb-1">
                 {role === 'customer' ? 'Customer Mobile Number / Email' : 'Professional Registered Phone / Email'}
@@ -222,7 +232,10 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
               <input
                 type="password"
                 required
-                defaultValue="••••••••"
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
                 className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-mono"
               />
             </div>
