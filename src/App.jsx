@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider, useNotifications } from './context/NotificationContext';
+import AuthView from './components/views/AuthView';
 
 // HOMMIE Layout Components
 import HommieNavbar from './components/HommieNavbar';
@@ -30,6 +31,10 @@ import { getActiveLocality, getActiveCity, getBookingById, subscribeHommieState 
 
 function HommieMainApp() {
   const { currentUser, role, switchRole } = useAuth();
+
+  if (!currentUser) {
+    return <AuthView onSuccess={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />;
+  }
   
   // Navigation State
   const [currentView, setCurrentView] = useState('home'); // home, discovery, pro-profile, my-home, bookings, pro-dashboard, pro-onboarding, admin

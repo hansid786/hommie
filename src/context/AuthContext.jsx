@@ -7,9 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('hommie_auth_user_v1');
-      return saved ? JSON.parse(saved) : HOMMIE_SEED_CUSTOMER;
+      return saved ? JSON.parse(saved) : null;
     } catch (e) {
-      return HOMMIE_SEED_CUSTOMER;
+      return null;
     }
   });
 
@@ -88,9 +88,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    const guestCustomer = { ...HOMMIE_SEED_CUSTOMER };
-    setCurrentUser(guestCustomer);
-    localStorage.setItem('hommie_auth_user_v1', JSON.stringify(guestCustomer));
+    setCurrentUser(null);
+    localStorage.removeItem('hommie_auth_user_v1');
   };
 
   const switchRole = (newRole) => {
