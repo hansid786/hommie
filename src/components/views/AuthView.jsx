@@ -94,7 +94,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <HeartHandshake className="w-6 h-6" />
           </div>
-          <span className="text-3xl font-black tracking-[-0.06em] text-white">Doorstep Pro Services</span>
+          <span className="text-3xl font-black tracking-[-0.06em] text-white">HOMMIE</span>
         </div>
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -102,7 +102,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          {mode === 'login' ? 'Welcome back to Doorstep Pro Services' : 'Start your service journey'}
+          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your service journey'}
         </h1>
         <p className="text-xs text-slate-300 font-medium">
           {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
@@ -195,11 +195,12 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
               </div>
             )}
             <div>
-              <label className="font-bold text-slate-700 block mb-1">
+              <label className="font-bold text-slate-700 block mb-1" htmlFor="login-identifier">
                 Email address or registered phone
               </label>
               <div className="relative">
                 <input
+                  id="login-identifier"
                   type="text"
                   required
                   placeholder="you@example.com or +91 98450 21984"

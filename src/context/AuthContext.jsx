@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const authRequestRef = React.useRef(0);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         if (error) throw error;
         if (active && data.user) {
           setCurrentUser(getUserFromSupabase(data.user));
-        } else if (active) {
+        } else if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
           localStorage.removeItem(AUTH_STORAGE_KEY);
         }
@@ -66,9 +67,11 @@ export const AuthProvider = ({ children }) => {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
       if (!session?.user) {
-        setCurrentUser(null);
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-        setIsLoading(false);
+        if (authRequestRef.current === 0) {
+          setCurrentUser(null);
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+          setIsLoading(false);
+        }
         return;
       }
       const nextUser = getUserFromSupabase(session.user);
@@ -83,6 +86,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (phoneOrEmail, password, roleHint = 'customer') => {
+    const requestId = ++authRequestRef.current;
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
@@ -125,7 +129,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
       return { success: true, user };
     } finally {
-      setIsLoading(false);
+      if (authRequestRef.current === requestId) {
+        authRequestRef.current = 0;
+        setIsLoading(false);
+      }
     }
   };
 
