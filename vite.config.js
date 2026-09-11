@@ -16,6 +16,11 @@ export default defineConfig(({ mode }) => {
     ''
 
   return {
+    plugins: [react(), tailwindcss(), viteSingleFile()],
+    cssMinify: 'esbuild',
+    build: {
+      chunkSizeWarningLimit: 800,
+    },
     define: {
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseUrl),
       'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(supabaseAnonKey),

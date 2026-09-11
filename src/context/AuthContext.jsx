@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { HOMMIE_SEED_CUSTOMER } from '../data/hommieData';
 import { apiLogin, apiRegister } from '../services/api';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 
@@ -24,6 +23,7 @@ const getUserFromSupabase = (authUser) => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
+    if (isSupabaseConfigured) return null;
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
       return stored ? JSON.parse(stored) : null;
@@ -41,18 +41,34 @@ export const AuthProvider = ({ children }) => {
     }
 
     let active = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (active && data.user) {
-        setCurrentUser(getUserFromSupabase(data.user));
+    const initializeAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        if (active && data.user) {
+          setCurrentUser(getUserFromSupabase(data.user));
+        } else if (active) {
+          setCurrentUser(null);
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+      } catch (error) {
+        console.error('[v0] Auth initialization failed:', error);
+        if (active) {
+          setCurrentUser(null);
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+      } finally {
+        if (active) setIsLoading(false);
       }
-      if (active) setIsLoading(false);
-    });
+    };
+    initializeAuth();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
       if (!session?.user) {
         setCurrentUser(null);
         localStorage.removeItem(AUTH_STORAGE_KEY);
+        setIsLoading(false);
         return;
       }
       const nextUser = getUserFromSupabase(session.user);

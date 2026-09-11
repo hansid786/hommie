@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { apiGetNotifications, apiMarkNotificationRead } from '../services/api';
 import { useAuth } from './AuthContext';
 
@@ -9,21 +9,43 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [activeChatBooking, setActiveChatBooking] = useState(null);
   const [toast, setToast] = useState(null);
+  const toastTimerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+  }, []);
 
   const fetchNotifications = async () => {
-    if (!currentUser) return;
-    const list = await apiGetNotifications(currentUser.id);
-    setNotifications(list);
+    if (!currentUser) {
+      setNotifications([]);
+      return;
+    }
+    try {
+      const list = await apiGetNotifications(currentUser.id);
+      setNotifications(Array.isArray(list) ? list : []);
+    } catch (error) {
+      console.error('[v0] Notifications failed to load:', error);
+      setNotifications([]);
+    }
   };
 
   useEffect(() => {
-    fetchNotifications();
-  }, [currentUser]);
+    let active = true;
+    setActiveChatBooking(null);
+    fetchNotifications().catch(() => {
+      if (active) setNotifications([]);
+    });
+    return () => {
+      active = false;
+    };
+  }, [currentUser?.id]);
 
   const showToast = (message, type = 'success') => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
     setToast({ message, type, id: Date.now() });
-    setTimeout(() => {
+    toastTimerRef.current = window.setTimeout(() => {
       setToast(null);
+      toastTimerRef.current = null;
     }, 4500);
   };
 
