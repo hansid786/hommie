@@ -31,10 +31,10 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
   });
 
   return (
-    <div className="space-y-6 my-6">
+    <div className="space-y-8 my-6">
       
       {/* Customer Discovery Hero */}
-      <div className="bg-gradient-to-r from-indigo-900 via-blue-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-700/40 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#102a43] via-[#164e63] to-[#0f766e] text-white rounded-[2rem] p-6 sm:p-8 shadow-xl border border-teal-700/40 relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
@@ -44,7 +44,7 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
             Book Verified Local Karigars with Zero Commission Markup
           </h1>
           <p className="text-blue-100 text-sm mt-2">
-            Corporate apps add 30% hidden margins and charge workers lead fees. On <strong>Gig Work</strong>, 95%+ of what you pay goes straight to your local electrician, plumber, cleaner or carpenter.
+            Get transparent pricing and trusted local help without the usual marketplace markup. On <strong>Hommie</strong>, your booking supports the professional who serves your neighborhood.
           </p>
 
           {/* Search Box in Hero */}
@@ -75,8 +75,23 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
         </div>
       </div>
 
+      {/* Trust signals */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { value: '100%', label: 'Verified professionals', tone: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
+          { value: '4.8/5', label: 'Average local rating', tone: 'text-amber-700 bg-amber-50 border-amber-100' },
+          { value: '30 days', label: 'Service warranty', tone: 'text-blue-700 bg-blue-50 border-blue-100' },
+          { value: '0%', label: 'Hidden booking fees', tone: 'text-indigo-700 bg-indigo-50 border-indigo-100' }
+        ].map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border px-4 py-3 ${stat.tone}`}>
+            <p className="text-lg sm:text-xl font-black tracking-tight">{stat.value}</p>
+            <p className="text-[11px] font-semibold opacity-80 mt-0.5">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Verified Local Workers Grid */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-6">
           <div>
             <h2 className="text-xl font-extrabold text-slate-900">Nearby Verified Workers in Your Ward</h2>
@@ -93,7 +108,7 @@ export default function CustomerExplorerView({ workers, onBookWorker }) {
           {filteredWorkers.map((w) => (
             <div
               key={w.id}
-              className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-blue-400 transition-all p-5 flex flex-col justify-between"
+              className="bg-white rounded-[1.5rem] border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-teal-300 transition-all p-5 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-3">

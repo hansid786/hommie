@@ -31,6 +31,7 @@ import {
 } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
+import LiveBookingTracker from '../LiveBookingTracker';
 
 export default function CustomerDashboardView({ 
   onViewInvoice, 
@@ -337,6 +338,7 @@ export default function CustomerDashboardView({
                     </div>
                   </div>
 
+                  <LiveBookingTracker booking={booking} role="customer" />
                 </div>
 
               </div>

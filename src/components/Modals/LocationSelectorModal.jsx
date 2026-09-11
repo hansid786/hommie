@@ -4,7 +4,7 @@ import { getCities, setCustomerLocality } from '../../services/hommieState';
 
 export default function LocationSelectorModal({ isOpen, onClose, activeLocality, activeCity }) {
   const [cities] = useState(getCities());
-  const [selectedCityId, setSelectedCityId] = useState(activeCity?.id || 'blr');
+  const [selectedCityId, setSelectedCityId] = useState(activeCity?.id || 'lko');
   const [searchQuery, setSearchQuery] = useState('');
   const [isDetectingGps, setIsDetectingGps] = useState(false);
   const [gpsSuccessMessage, setGpsSuccessMessage] = useState(null);
@@ -30,8 +30,8 @@ export default function LocationSelectorModal({ isOpen, onClose, activeLocality,
 
     setTimeout(() => {
       setIsDetectingGps(false);
-      setCustomerLocality('Bengaluru', 'Indiranagar');
-      setGpsSuccessMessage('GPS Verified: Indiranagar, Bengaluru (560038)');
+      setCustomerLocality('Lucknow', 'Gomti Nagar');
+      setGpsSuccessMessage('GPS Verified: Gomti Nagar, Lucknow (226010)');
       setTimeout(() => {
         onClose();
       }, 1000);

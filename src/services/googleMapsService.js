@@ -13,10 +13,7 @@ const LOCAL_HUBS = [
   { description: 'Vikas Nagar, Lucknow, Uttar Pradesh 226022', locality: 'Vikas Nagar', city: 'Lucknow', lat: 26.8900, lng: 80.9600 },
   { description: 'Ashiyana, Lucknow, Uttar Pradesh 226012', locality: 'Ashiyana', city: 'Lucknow', lat: 26.7900, lng: 80.9100 },
   { description: 'Jankipuram Extension, Lucknow, Uttar Pradesh 226021', locality: 'Jankipuram', city: 'Lucknow', lat: 26.9200, lng: 80.9400 },
-  { description: 'Indiranagar, Bengaluru, Karnataka 560038', locality: 'Indiranagar', city: 'Bengaluru', lat: 12.9784, lng: 77.6408 },
-  { description: 'Koramangala 5th Block, Bengaluru, Karnataka 560095', locality: 'Koramangala', city: 'Bengaluru', lat: 12.9352, lng: 77.6245 },
-  { description: 'HSR Layout Sector 2, Bengaluru, Karnataka 560102', locality: 'HSR Layout', city: 'Bengaluru', lat: 12.9121, lng: 77.6446 },
-  { description: 'Whitefield, Bengaluru, Karnataka 560066', locality: 'Whitefield', city: 'Bengaluru', lat: 12.9698, lng: 77.7500 }
+
 ];
 
 /**
