@@ -28,6 +28,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
   const [trade, setTrade] = useState('AC Repair');
   const [locality, setLocality] = useState('Gomti Nagar, Lucknow');
   const [baseRate, setBaseRate] = useState('349');
@@ -41,7 +42,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
     setIsSubmitting(true);
     try {
       setFormError('');
-      const res = await login(phone || email, password);
+      const res = await login(loginIdentifier, password);
       if (res.success) {
         showToast(`Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
@@ -188,15 +189,15 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
             )}
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {role === 'customer' ? 'Customer Mobile Number / Email' : 'Professional Registered Phone / Email'}
+                Email address or registered phone
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
-                  placeholder={role === 'customer' ? '98450 77123' : '98450 21984'}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="you@example.com or +91 98450 21984"
+                  value={loginIdentifier}
+                  onChange={(e) => setLoginIdentifier(e.target.value)}
                   className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-medium"
                 />
               </div>
