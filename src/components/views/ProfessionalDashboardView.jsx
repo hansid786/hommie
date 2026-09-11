@@ -110,7 +110,7 @@ export default function ProfessionalDashboardView({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-16">
       {/* 1. Pro Header Bar & Availability Toggle */}
-      <div className="bg-slate-900 text-white border-b border-slate-800">
+      <div className="bg-gradient-to-br from-slate-950 via-teal-950 to-emerald-950 text-white border-b border-emerald-800/50 shadow-xl shadow-teal-950/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
