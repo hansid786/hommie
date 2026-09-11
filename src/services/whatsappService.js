@@ -11,7 +11,7 @@ export function sendCustomerBookingWhatsApp(booking) {
     `*Slot:* ${booking.scheduledDate}, ${booking.scheduledSlot}\n` +
     `*Address:* ${booking.addressText}\n` +
     `*Amount:* INR ${booking.finalAmount}\n\n` +
-    `Track your technician live on Doorstep Services App!`;
+    `View booking updates and service details in the HOMMIE app.`;
 
   const text = encodeURIComponent(message);
   const cleanPhone = (booking.customerPhone || '9845077123').replace(/[^0-9]/g, '');

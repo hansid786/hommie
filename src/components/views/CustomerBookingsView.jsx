@@ -93,7 +93,7 @@ export default function CustomerBookingsView({
             <div>
               <h1 className="text-2xl font-extrabold text-slate-950">My Bookings & Service Visits</h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Real-time tracking, on-site quotes, direct payments, and 30-day warranty records
+                Clear booking updates, on-site quotes, secure payments, and 30-day warranty records
               </p>
             </div>
 
