@@ -30,6 +30,7 @@ import {
   submitOnSiteQuote,
   subscribeHommieState
 } from '../../services/hommieState';
+import LiveBookingTracker from '../LiveBookingTracker';
 
 export default function ProfessionalDashboardView({
   proId = 'pro-arjun',
@@ -318,6 +319,10 @@ export default function ProfessionalDashboardView({
                       <span className="text-[10px] text-slate-400 font-normal block mt-1">Request Payment</span>
                     </button>
                   </div>
+                </div>
+
+                <div className="mb-5">
+                  <LiveBookingTracker booking={activeJob} role="worker" />
                 </div>
 
                 {/* Location & Instructions */}

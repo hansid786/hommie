@@ -71,7 +71,7 @@ export default function HommieNavbar({
           >
             <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span className="max-w-[120px] sm:max-w-[160px] truncate">
-              {activeLocality?.name || 'Indiranagar'}, {activeCity?.name || 'Bengaluru'}
+              {activeLocality?.name || 'Gomti Nagar'}, {activeCity?.name || 'Lucknow'}
             </span>
             <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>

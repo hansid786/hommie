@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { NotificationProvider, useNotifications } from './context/NotificationContext';
+import { NotificationProvider } from './context/NotificationContext';
 import AuthView from './components/views/AuthView';
 
 // HOMMIE Layout Components
@@ -11,6 +11,7 @@ import ChatDrawer from './components/ChatDrawer';
 
 // HOMMIE Views
 import CustomerHomeView from './components/views/CustomerHomeView';
+import CustomerDashboardView from './components/views/CustomerDashboardView';
 import DiscoveryView from './components/views/DiscoveryView';
 import ProfessionalPublicProfileView from './components/views/ProfessionalPublicProfileView';
 import MyHomeView from './components/views/MyHomeView';
@@ -27,17 +28,17 @@ import HommiePaymentModal from './components/Modals/HommiePaymentModal';
 import HommieRatingModal from './components/Modals/HommieRatingModal';
 import SafetyReportModal from './components/Modals/SafetyReportModal';
 
-import { getActiveLocality, getActiveCity, getBookingById, subscribeHommieState } from './services/hommieState';
+import { getActiveLocality, getActiveCity, subscribeHommieState } from './services/hommieState';
 
 function HommieMainApp() {
   const { currentUser, role, switchRole } = useAuth();
 
-  if (!currentUser) {
-    return <AuthView onSuccess={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />;
-  }
-  
   // Navigation State
-  const [currentView, setCurrentView] = useState('home'); // home, discovery, pro-profile, my-home, bookings, pro-dashboard, pro-onboarding, admin
+  const [currentView, setCurrentView] = useState(() => {
+    if (role === 'worker' || role === 'professional') return 'pro-dashboard';
+    if (role === 'admin') return 'admin';
+    return 'customer-dashboard';
+  }); // customer-dashboard, home, discovery, pro-profile, my-home, bookings, pro-dashboard, pro-onboarding, admin
   const [viewParams, setViewParams] = useState({});
 
   // Active locality state
@@ -83,9 +84,13 @@ function HommieMainApp() {
     } else if (role === 'admin') {
       setCurrentView('admin');
     } else if (role === 'customer' && (currentView === 'pro-dashboard' || currentView === 'admin')) {
-      setCurrentView('home');
+      setCurrentView('customer-dashboard');
     }
   }, [role]);
+
+  if (!currentUser) {
+    return <AuthView onSuccess={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />;
+  }
 
   // Navigation Helper
   const navigateTo = (view, params = {}) => {
@@ -104,7 +109,7 @@ function HommieMainApp() {
     setShowBookingModal(true);
   };
 
-  const handleBookingConfirmed = (newBooking) => {
+  const handleBookingConfirmed = () => {
     setShowBookingModal(false);
     navigateTo('bookings');
   };
@@ -146,6 +151,18 @@ function HommieMainApp() {
 
       {/* 2. MAIN VIEW SWITCHER */}
       <main className="flex-1">
+        {currentView === 'customer-dashboard' && (
+          <CustomerDashboardView
+            onBookNewService={() => navigateTo('home')}
+            onSelectWorker={(worker) => navigateTo('pro-profile', { proId: worker.id })}
+            onRateWorker={handleOpenRating}
+            onDisputeBooking={handleOpenSafety}
+            onReportSafety={handleOpenSafety}
+            onPayBooking={handleOpenPayment}
+            onViewInvoice={(booking) => navigateTo('bookings', { booking })}
+          />
+        )}
+
         {currentView === 'home' && (
           <CustomerHomeView
             onSelectCategory={(slug) => navigateTo('discovery', { category: slug })}
@@ -204,7 +221,7 @@ function HommieMainApp() {
 
         {currentView === 'pro-onboarding' && (
           <ProfessionalOnboardingView
-            onCompleted={(newPro) => {
+            onCompleted={() => {
               switchRole('worker');
               navigateTo('pro-dashboard');
             }}

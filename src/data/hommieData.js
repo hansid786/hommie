@@ -5,19 +5,6 @@
 
 export const HOMMIE_CITIES = [
   {
-    id: 'blr',
-    name: 'Bengaluru',
-    state: 'Karnataka',
-    active: true,
-    localities: [
-      { id: 'indiranagar', name: 'Indiranagar', pincode: '560038', active: true, supportedCategories: ['electrician', 'plumber', 'ac-service', 'appliance', 'carpenter', 'cleaning'], centerCoords: { lat: 12.9784, lng: 77.6408 } },
-      { id: 'koramangala', name: 'Koramangala', pincode: '560095', active: true, supportedCategories: ['electrician', 'plumber', 'ac-service', 'appliance', 'carpenter', 'cleaning'], centerCoords: { lat: 12.9352, lng: 77.6245 } },
-      { id: 'hsr-layout', name: 'HSR Layout', pincode: '560102', active: true, supportedCategories: ['electrician', 'plumber', 'ac-service', 'appliance', 'carpenter', 'cleaning'], centerCoords: { lat: 12.9121, lng: 77.6446 } },
-      { id: 'whitefield', name: 'Whitefield', pincode: '560066', active: true, supportedCategories: ['electrician', 'plumber', 'ac-service', 'appliance', 'cleaning'], centerCoords: { lat: 12.9698, lng: 77.7500 } },
-      { id: 'bellandur', name: 'Bellandur', pincode: '560103', active: false, supportedCategories: [], centerCoords: { lat: 12.9304, lng: 77.6784 } }
-    ]
-  },
-  {
     id: 'lko',
     name: 'Lucknow',
     state: 'Uttar Pradesh',

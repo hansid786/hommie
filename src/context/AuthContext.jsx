@@ -1,51 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { HOMMIE_SEED_CUSTOMER, HOMMIE_PROFESSIONALS } from '../data/hommieData';
+import { apiLogin, apiRegister } from '../services/api';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hommie_auth_user_v1');
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-      return null;
-    }
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async (phoneOrEmail, password, roleHint = 'customer') => {
     setIsLoading(true);
     try {
-      let user = null;
-      if (roleHint === 'worker' || roleHint === 'professional') {
-        const pro = HOMMIE_PROFESSIONALS[0];
-        user = {
-          id: pro.userId,
-          proId: pro.id,
-          name: pro.name,
-          phone: pro.phone,
-          email: pro.email,
-          role: 'professional',
-          trade: pro.trade,
-          avatar: pro.avatar,
-          kycStatus: pro.kycStatus,
-          isAvailable: pro.isAvailable
-        };
-      } else if (roleHint === 'admin') {
-        user = {
-          id: 'u-admin-1',
-          name: 'HOMMIE Operations Lead',
-          phone: '+91 99000 11223',
-          email: 'ops@hommie.in',
-          role: 'admin',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
-        };
-      } else {
-        user = { ...HOMMIE_SEED_CUSTOMER, role: 'customer' };
-      }
-
+      const result = await apiLogin(phoneOrEmail, password, roleHint === 'professional' ? 'worker' : roleHint);
+      const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
       localStorage.setItem('hommie_auth_user_v1', JSON.stringify(user));
       return { success: true, user };
@@ -57,31 +25,11 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     setIsLoading(true);
     try {
-      const newUser = {
-        id: 'u-' + Date.now(),
-        name: userData.fullName || 'New Homeowner',
-        phone: userData.phone || '+91 98450 00000',
-        email: userData.email || 'user@example.com',
-        role: userData.role || 'customer',
-        city: userData.city || 'Bengaluru',
-        activeLocality: userData.locality || 'Indiranagar',
-        trade: userData.trade,
-        kycStatus: userData.role === 'professional' ? 'pending' : 'verified',
-        savedAddresses: [
-          {
-            id: 'addr-' + Date.now(),
-            label: 'Home',
-            addressLine1: userData.locality || '12th Main Road',
-            locality: userData.locality || 'Indiranagar',
-            city: userData.city || 'Bengaluru',
-            pincode: '560038',
-            isDefault: true
-          }
-        ]
-      };
-      setCurrentUser(newUser);
-      localStorage.setItem('hommie_auth_user_v1', JSON.stringify(newUser));
-      return { success: true, user: newUser };
+      const result = await apiRegister({ ...userData, role: userData.role === 'professional' ? 'worker' : userData.role });
+      const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
+      setCurrentUser(user);
+      localStorage.setItem('hommie_auth_user_v1', JSON.stringify(user));
+      return { success: true, user };
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const switchRole = (newRole) => {
-    if (newRole === 'professional') {
+    if (newRole === 'professional' || newRole === 'worker') {
       const pro = HOMMIE_PROFESSIONALS[0];
       const proUser = {
         id: pro.userId,
@@ -101,7 +49,7 @@ export const AuthProvider = ({ children }) => {
         name: pro.name,
         phone: pro.phone,
         email: pro.email,
-        role: 'professional',
+        role: 'worker',
         trade: pro.trade,
         avatar: pro.avatar,
         kycStatus: pro.kycStatus,
