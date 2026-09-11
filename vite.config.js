@@ -4,17 +4,17 @@ import tailwindcss from '@tailwindcss/vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     tailwindcss(),
-    viteSingleFile(),
+    ...(mode === 'production' ? [viteSingleFile()] : []),
   ],
   server: {
     host: '0.0.0.0',
     port: 5173,
     allowedHosts: true,
   },
-})
+}))
 
 
