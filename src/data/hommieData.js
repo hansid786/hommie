@@ -165,9 +165,9 @@ export const HOMMIE_PROFESSIONALS = [
     about: 'I have been servicing residential air conditioners across Bengaluru and Lucknow for over a decade. I believe in transparent troubleshooting: I always show the client what part is faulty before quoting.',
     phone: '+91 98450 21984',
     email: 'arjun.hvac@hommie.pro',
-    city: 'Bengaluru',
-    primaryLocality: 'Indiranagar',
-    serviceLocalities: ['Indiranagar', 'Koramangala', 'HSR Layout', 'Whitefield'],
+city: 'Lucknow',
+  primaryLocality: 'Gomti Nagar',
+  serviceLocalities: ['Gomti Nagar', 'Hazratganj', 'Aliganj', 'Indira Nagar'],
     serviceRadiusKm: 12,
     languages: ['Hindi', 'Kannada', 'English'],
     experienceYears: 11,
@@ -464,8 +464,8 @@ export const HOMMIE_SEED_CUSTOMER = {
   phone: '+91 98450 77123',
   email: 'hanzala@example.com',
   role: 'customer',
-  city: 'Bengaluru',
-  activeLocality: 'Indiranagar',
+  city: 'Lucknow',
+  activeLocality: 'Gomti Nagar',
   savedAddresses: [
     {
       id: 'addr-1',
