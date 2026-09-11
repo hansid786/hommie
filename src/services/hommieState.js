@@ -232,6 +232,12 @@ export function createBooking(payload) {
 
   const newBooking = {
     id: 'b-' + Date.now(),
+    locationSharing: {
+      customer: null,
+      worker: null,
+      customerSharing: false,
+      workerSharing: false
+    },
     bookingRef: 'HOM-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000),
     customerId: payload.customerId || _customer?.id || 'u-cust-1',
     customerName: payload.customerName || _customer?.name || 'Hanzala Siddiqui',
@@ -320,12 +326,49 @@ export function createBooking(payload) {
   return newBooking;
 }
 
+export function startBookingLocationSharing(bookingId, role) {
+  const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
+  if (!booking || !['customer', 'worker'].includes(role)) return false;
+  booking.locationSharing = booking.locationSharing || { customer: null, worker: null, customerSharing: false, workerSharing: false };
+  booking.locationSharing[role + 'Sharing'] = true;
+  booking.locationSharing[role + 'StartedAt'] = new Date().toISOString();
+  saveToStorage(STORAGE_KEYS.BOOKINGS, _bookings);
+  notifyStateChanged();
+  return true;
+}
+
+export function stopBookingLocationSharing(bookingId, role) {
+  const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
+  if (!booking || !['customer', 'worker'].includes(role)) return false;
+  booking.locationSharing = booking.locationSharing || { customer: null, worker: null, customerSharing: false, workerSharing: false };
+  booking.locationSharing[role + 'Sharing'] = false;
+  booking.locationSharing[role + 'StoppedAt'] = new Date().toISOString();
+  saveToStorage(STORAGE_KEYS.BOOKINGS, _bookings);
+  notifyStateChanged();
+  return true;
+}
+
+export function updateBookingLocation(bookingId, role, position) {
+  const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
+  if (!booking || !['customer', 'worker'].includes(role)) return false;
+  booking.locationSharing = booking.locationSharing || { customer: null, worker: null, customerSharing: false, workerSharing: false };
+  if (!booking.locationSharing[role + 'Sharing']) return false;
+  booking.locationSharing[role] = { ...position, updatedAt: position.updatedAt || new Date().toISOString() };
+  saveToStorage(STORAGE_KEYS.BOOKINGS, _bookings);
+  notifyStateChanged();
+  return true;
+}
+
 export function advanceBookingStatus(bookingId, nextStatus, options = {}) {
   const booking = _bookings.find((b) => b.id === bookingId || b.bookingRef === bookingId);
   if (!booking) return { success: false, error: 'Booking not found' };
 
   const prevStatus = booking.status;
   booking.status = nextStatus;
+  if (['completed', 'cancelled_by_customer', 'cancelled_by_pro'].includes(nextStatus) && booking.locationSharing) {
+    booking.locationSharing.customerSharing = false;
+    booking.locationSharing.workerSharing = false;
+  }
 
   booking.statusHistory.push({
     status: nextStatus,

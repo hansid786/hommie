@@ -22,6 +22,7 @@ import {
   cancelBooking,
   subscribeHommieState
 } from '../../services/hommieState';
+import LiveBookingTracker from '../LiveBookingTracker';
 
 const STATUS_CONFIG = {
   draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700' },
@@ -193,6 +194,7 @@ export default function CustomerBookingsView({
 
                   {/* Body Content */}
                   <div className="p-6">
+                    <LiveBookingTracker booking={booking} role="customer" />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Column 1: Service & Pro Details */}
                       <div className="md:col-span-2 space-y-4">
