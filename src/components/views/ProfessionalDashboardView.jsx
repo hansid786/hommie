@@ -330,13 +330,13 @@ export default function ProfessionalDashboardView({
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-white font-bold">{activeJob.address?.formattedAddress || 'Indiranagar 100ft Road, Bengaluru'}</span>
+                      <span className="text-white font-bold">{activeJob.address?.formattedAddress || 'Gomti Nagar, Lucknow'}</span>
                       <p className="text-slate-400 text-[11px] mt-0.5">Special note: "{activeJob.notes || 'Please call before ringing bell.'}"</p>
                     </div>
                   </div>
 
                   <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(activeJob.address?.formattedAddress || 'Indiranagar Bengaluru')}`}
+                    href={`https://maps.google.com/?q=${activeJob.address?.lat && activeJob.address?.lng ? `${activeJob.address.lat},${activeJob.address.lng}` : encodeURIComponent(activeJob.address?.formattedAddress || 'Gomti Nagar Lucknow')}`}
                     target="_blank"
                     rel="noreferrer"
                     className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition inline-flex items-center gap-1.5 shrink-0"

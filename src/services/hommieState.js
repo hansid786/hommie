@@ -274,12 +274,14 @@ export function createBooking(payload) {
       }
     ],
     address: payload.address || {
-      flatNo: 'A-402, Green Glen Layout',
+      flatNo: 'Flat 302, Palm Heights',
       street: '12th Main Road',
-      locality: _customer?.activeLocality || 'Indiranagar',
-      city: _customer?.city || 'Bengaluru',
-      pincode: '560038',
-      formattedAddress: 'A-402, Green Glen, 12th Main, Indiranagar, Bengaluru - 560038'
+      locality: _customer?.activeLocality || 'Gomti Nagar',
+      city: 'Lucknow',
+      pincode: '226010',
+      lat: null,
+      lng: null,
+      formattedAddress: 'Flat 302, Palm Heights, Gomti Nagar, Lucknow - 226010'
     },
     notes: payload.notes || 'Please ring bell upon arrival',
     safetyGuidelinesAcknowledged: true,
