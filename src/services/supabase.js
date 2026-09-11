@@ -1,5 +1,4 @@
-// Supabase Client Initializer with Environment Variable Support
-// Allows plug-and-play connection to any hosted Supabase instance
+import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -18,12 +17,15 @@ export const getSupabase = () => {
     return null;
   }
   if (!supabaseClient) {
-    // Dynamic import to support environments where supabase credentials are added later
     try {
-      const { createClient } = require('@supabase/supabase-js');
-      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true
+        }
+      });
     } catch (e) {
-      console.warn('Supabase client initialization skipped: credentials not provided or library dynamically handled.');
+      console.warn('Supabase client initialization error:', e);
     }
   }
   return supabaseClient;
