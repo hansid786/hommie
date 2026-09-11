@@ -44,17 +44,19 @@ export const AuthProvider = ({ children }) => {
     let active = true;
     const initializeAuth = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
+        const { data, error } = await supabase.auth.getSession();
         if (error) throw error;
-        if (active && data.user) {
-          setCurrentUser(getUserFromSupabase(data.user));
+        if (active && data.session?.user) {
+          const nextUser = getUserFromSupabase(data.session.user);
+          setCurrentUser(nextUser);
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
         } else if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
           localStorage.removeItem(AUTH_STORAGE_KEY);
         }
       } catch (error) {
         console.error('[v0] Auth initialization failed:', error);
-        if (active) {
+        if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
           localStorage.removeItem(AUTH_STORAGE_KEY);
         }
@@ -121,6 +123,7 @@ export const AuthProvider = ({ children }) => {
         };
         setCurrentUser(user);
         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+        setIsLoading(false);
         return { success: true, user };
       }
       const result = await apiLogin(phoneOrEmail, password, roleHint === 'professional' ? 'worker' : roleHint);
