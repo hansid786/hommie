@@ -29,10 +29,25 @@ import HommieRatingModal from './components/Modals/HommieRatingModal';
 import SafetyReportModal from './components/Modals/SafetyReportModal';
 import AppErrorBoundary from './components/AppErrorBoundary';
 
-import { getActiveLocality, getActiveCity, subscribeHommieState } from './services/hommieState';
+import { getActiveLocality, getActiveCity, subscribeHommieState, recordAuditLog } from './services/hommieState';
 
 function HommieMainApp() {
   const { currentUser, role, isLoading } = useAuth();
+
+  useEffect(() => {
+    const handleError = (event) => {
+      recordAuditLog('Runtime error: ' + (event.error?.message || event.message || 'Unknown client error'), 'Runtime Monitor');
+    };
+    const handleRejection = (event) => {
+      recordAuditLog('Unhandled promise rejection: ' + String(event.reason?.message || event.reason || 'Unknown rejection'), 'Runtime Monitor');
+    };
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleRejection);
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
+  }, []);
 
   // Navigation State
   const [currentView, setCurrentView] = useState(() => {
