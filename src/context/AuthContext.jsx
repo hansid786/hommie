@@ -80,9 +80,13 @@ export const AuthProvider = ({ children }) => {
       if (isSupabaseConfigured && supabase) {
         const identifier = normalizeIdentifier(phoneOrEmail);
         const normalizedPassword = password.trim();
+        const normalizedPhone = identifier.replace(/[^\d+]/g, '');
+        const phone = normalizedPhone.startsWith('+')
+          ? normalizedPhone
+          : normalizedPhone.length === 10 ? `+91${normalizedPhone}` : normalizedPhone;
         const credentials = identifier.includes('@')
           ? { email: identifier.toLowerCase(), password: normalizedPassword }
-          : { phone: identifier.replace(/[\s()-]/g, ''), password: normalizedPassword };
+          : { phone, password: normalizedPassword };
         const signInRequest = supabase.auth.signInWithPassword(credentials);
         const timeout = new Promise((_, reject) => {
           window.setTimeout(() => reject(new Error('Sign-in is taking too long. Check your connection and try again.')), 12000);
@@ -101,26 +105,16 @@ export const AuthProvider = ({ children }) => {
         if (!data?.user) {
           throw new Error('No account session was returned. Please verify your credentials and try again.');
         }
-        const metadata = data.user.user_metadata || {};
-        const appMetadata = data.user.app_metadata || {};
-        const user = {
-          id: data.user.id,
-          email: data.user.email,
-          name: metadata.fullName || metadata.name || data.user.email?.split('@')[0],
-          phone: metadata.phone || '',
-          role: appMetadata.role === 'professional' ? 'worker' : (appMetadata.role || metadata.role || 'customer')
-        };
-        if (!data.user) {
-          throw new Error('Supabase did not return a user session. Confirm the account exists and the email is verified.');
+        if (!data?.user || !data.session) {
+          const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError) throw sessionError;
+          if (!sessionData.session?.user) {
+            throw new Error('Sign-in completed without an active session. Please verify your account and try again.');
+          }
+          data.user = sessionData.session.user;
         }
         const nextUser = getUserFromSupabase(data.user);
         setCurrentUser(nextUser);
-              if (!data.session) {
-          const { data: sessionData } = await supabase.auth.getSession();
-          if (!sessionData.session) {
-            throw new Error('Your account needs email verification before you can sign in.');
-          }
-        }
         setIsLoading(false);
         return { success: true, user: nextUser };
       }
