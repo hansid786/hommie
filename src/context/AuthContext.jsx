@@ -44,17 +44,19 @@ export const AuthProvider = ({ children }) => {
     let active = true;
     const initializeAuth = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
+        const { data, error } = await supabase.auth.getSession();
         if (error) throw error;
-        if (active && data.user) {
-          setCurrentUser(getUserFromSupabase(data.user));
+        if (active && data.session?.user) {
+          const nextUser = getUserFromSupabase(data.session.user);
+          setCurrentUser(nextUser);
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
         } else if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
           localStorage.removeItem(AUTH_STORAGE_KEY);
         }
       } catch (error) {
         console.error('[v0] Auth initialization failed:', error);
-        if (active) {
+        if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
           localStorage.removeItem(AUTH_STORAGE_KEY);
         }
@@ -108,7 +110,7 @@ export const AuthProvider = ({ children }) => {
           if (message.includes('rate limit')) {
             throw new Error('Too many attempts. Please wait a moment and try again.');
           }
-          throw new Error('Invalid email/phone or password.');
+          throw new Error(error.message || 'Invalid email/phone or password.');
         }
         const metadata = data.user.user_metadata || {};
         const appMetadata = data.user.app_metadata || {};
@@ -119,9 +121,20 @@ export const AuthProvider = ({ children }) => {
           phone: metadata.phone || '',
           role: appMetadata.role === 'professional' ? 'worker' : (appMetadata.role || metadata.role || 'customer')
         };
-        setCurrentUser(user);
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-        return { success: true, user };
+        if (!data.user) {
+          throw new Error('Supabase did not return a user session. Confirm the account exists and the email is verified.');
+        }
+        const nextUser = getUserFromSupabase(data.user);
+        setCurrentUser(nextUser);
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
+        if (!data.session) {
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (!sessionData.session) {
+            throw new Error('Your account needs email verification before you can sign in.');
+          }
+        }
+        setIsLoading(false);
+        return { success: true, user: nextUser };
       }
       const result = await apiLogin(phoneOrEmail, password, roleHint === 'professional' ? 'worker' : roleHint);
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
@@ -137,12 +150,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
+    const signupPassword = String(userData.password || '').trim();
+    if (signupPassword.length < 8) {
+      throw new Error('Password must be at least 8 characters.');
+    }
+    if (!userData.email?.trim()) {
+      throw new Error('Enter a valid email address to create your account.');
+    }
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
         const { data, error } = await supabase.auth.signUp({
           email: userData.email,
-          password: userData.password,
+          password: signupPassword,
           options: {
             emailRedirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
             data: {

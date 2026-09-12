@@ -63,12 +63,18 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setFormError('');
+    if (password.trim().length < 8) {
+      setFormError('Password must be at least 8 characters.');
+      return;
+    }
     setIsSubmitting(true);
     try {
       const res = await register({
         fullName: fullName || (role === 'worker' ? 'Arjun Singh' : 'Hanzala'),
         phone: phone ? `+91 ${phone}` : '+91 98450 21984',
-        email: email || `${(fullName || 'user').toLowerCase().replace(/\s+/g, '')}@example.com`,
+        email: email.trim(),
+        password: password.trim(),
         role,
         trade,
         locality,
@@ -80,6 +86,8 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         showToast(`Account created successfully! Welcome to the marketplace.`);
         if (onSuccess) onSuccess(res.user);
       }
+    } catch (error) {
+      setFormError(error.message || 'Unable to create your account. Please check your details.');
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +110,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your service journey'}
+          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your HOMMIE journey'}
         </h1>
         <p className="text-xs text-slate-300 font-medium">
           {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
