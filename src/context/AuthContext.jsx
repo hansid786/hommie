@@ -22,15 +22,7 @@ const getUserFromSupabase = (authUser) => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(() => {
-    if (isSupabaseConfigured) return null;
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const authRequestRef = React.useRef(0);
@@ -49,7 +41,6 @@ export const AuthProvider = ({ children }) => {
         if (active && data.session?.user) {
           const nextUser = getUserFromSupabase(data.session.user);
           setCurrentUser(nextUser);
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
         } else if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
           localStorage.removeItem(AUTH_STORAGE_KEY);
@@ -71,7 +62,6 @@ export const AuthProvider = ({ children }) => {
       if (!session?.user) {
         if (authRequestRef.current === 0) {
           setCurrentUser(null);
-          localStorage.removeItem(AUTH_STORAGE_KEY);
           setIsLoading(false);
         }
         return;
@@ -111,6 +101,9 @@ export const AuthProvider = ({ children }) => {
             throw new Error('Too many attempts. Please wait a moment and try again.');
           }
           throw new Error(error.message || 'Invalid email/phone or password.');
+        }
+        if (!data?.user) {
+          throw new Error('No account session was returned. Please verify your credentials and try again.');
         }
         const metadata = data.user.user_metadata || {};
         const appMetadata = data.user.app_metadata || {};
@@ -217,6 +210,10 @@ export const AuthProvider = ({ children }) => {
     return { success: true, user: nextUser };
   };
 
+  const updateUserSession = (updates) => {
+    setCurrentUser((previous) => previous ? { ...previous, ...updates } : previous);
+  };
+
   const logout = async () => {
     if (isSupabaseConfigured && supabase) {
       await supabase.auth.signOut();
@@ -235,6 +232,10 @@ export const AuthProvider = ({ children }) => {
       register,
       verifyPhoneOtp,
       resendPhoneOtp,
+      updateUserSession,
+      refreshUser: async () => {},
+      sendOtp: async () => ({ success: false, error: 'Use phone signup verification.' }),
+      verifyOtp: verifyPhoneOtp,
       logout
     }}>
       {children}
