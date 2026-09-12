@@ -124,7 +124,28 @@ CREATE TABLE IF NOT EXISTS public.disputes (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 9. ROW LEVEL SECURITY (RLS)
+-- 9. PRIVATE KYC STORAGE METADATA
+CREATE TABLE IF NOT EXISTS public.kyc_documents (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  worker_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  storage_path TEXT NOT NULL UNIQUE,
+  file_name TEXT NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  file_size_bytes INT NOT NULL CHECK (file_size_bytes > 0 AND file_size_bytes <= 10485760),
+  status kyc_status DEFAULT 'pending',
+  reviewed_by UUID REFERENCES public.profiles(id),
+  rejection_reason TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.kyc_documents ENABLE ROW LEVEL SECURITY;
+
+-- Create the private bucket separately in Supabase Storage, then apply these policies:
+-- INSERT/SELECT on storage.objects must be limited to paths prefixed by auth.uid().
+-- Never expose KYC documents through a public bucket or unrestricted URL.
+
+-- 10. ROW LEVEL SECURITY (RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.customer_addresses ENABLE ROW LEVEL SECURITY;
@@ -181,6 +202,17 @@ CREATE POLICY "Users can manage own addresses"
   ON public.customer_addresses FOR ALL TO authenticated
   USING ((select auth.uid()) = customer_id)
   WITH CHECK ((select auth.uid()) = customer_id);
+
+CREATE POLICY "Workers can view own KYC documents"
+  ON public.kyc_documents FOR SELECT TO authenticated
+  USING ((select auth.uid()) = worker_id);
+CREATE POLICY "Workers can submit own KYC documents"
+  ON public.kyc_documents FOR INSERT TO authenticated
+  WITH CHECK ((select auth.uid()) = worker_id);
+CREATE POLICY "Admins can manage KYC documents"
+  ON public.kyc_documents FOR ALL TO authenticated
+  USING ((select auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
+  WITH CHECK ((select auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 
 CREATE POLICY "Participants can view disputes"
   ON public.disputes FOR SELECT TO authenticated
