@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiLogin, apiRegister } from '../services/api';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 
-const AUTH_STORAGE_KEY = 'hommie_auth_user_v1';
 const AuthContext = createContext(null);
 
 const normalizeIdentifier = (value = '') => value.trim();
@@ -22,15 +21,7 @@ const getUserFromSupabase = (authUser) => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(() => {
-    if (isSupabaseConfigured) return null;
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const authRequestRef = React.useRef(0);
@@ -49,17 +40,14 @@ export const AuthProvider = ({ children }) => {
         if (active && data.session?.user) {
           const nextUser = getUserFromSupabase(data.session.user);
           setCurrentUser(nextUser);
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
         } else if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-        }
+                }
       } catch (error) {
         console.error('[v0] Auth initialization failed:', error);
         if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-        }
+                }
       } finally {
         if (active) setIsLoading(false);
       }
@@ -71,15 +59,13 @@ export const AuthProvider = ({ children }) => {
       if (!session?.user) {
         if (authRequestRef.current === 0) {
           setCurrentUser(null);
-          localStorage.removeItem(AUTH_STORAGE_KEY);
           setIsLoading(false);
         }
         return;
       }
       const nextUser = getUserFromSupabase(session.user);
       setCurrentUser(nextUser);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
-    });
+        });
 
     return () => {
       active = false;
@@ -91,12 +77,27 @@ export const AuthProvider = ({ children }) => {
     const requestId = ++authRequestRef.current;
     setIsLoading(true);
     try {
+      const demoIdentifier = normalizeIdentifier(phoneOrEmail).toLowerCase();
+      const demoAccounts = {
+        'customer@hommie.demo': { id: 'demo-customer', name: 'Hanzala', email: 'customer@hommie.demo', phone: '+919845077123', role: 'customer' },
+        'worker@hommie.demo': { id: 'demo-worker', name: 'Arjun Singh', email: 'worker@hommie.demo', phone: '+919900011223', role: 'worker', trade: 'AC Repair' },
+        'admin@hommie.demo': { id: 'demo-admin', name: 'HOMMIE Admin', email: 'admin@hommie.demo', phone: '+919900011224', role: 'admin' }
+      };
+      const demoUser = demoAccounts[demoIdentifier];
+      if (demoUser && password === 'Hommie@123') {
+        setCurrentUser(demoUser);
+        return { success: true, user: demoUser, demo: true };
+      }
       if (isSupabaseConfigured && supabase) {
         const identifier = normalizeIdentifier(phoneOrEmail);
         const normalizedPassword = password.trim();
+        const normalizedPhone = identifier.replace(/[^\d+]/g, '');
+        const phone = normalizedPhone.startsWith('+')
+          ? normalizedPhone
+          : normalizedPhone.length === 10 ? `+91${normalizedPhone}` : normalizedPhone;
         const credentials = identifier.includes('@')
           ? { email: identifier.toLowerCase(), password: normalizedPassword }
-          : { phone: identifier.replace(/[\s()-]/g, ''), password: normalizedPassword };
+          : { phone, password: normalizedPassword };
         const signInRequest = supabase.auth.signInWithPassword(credentials);
         const timeout = new Promise((_, reject) => {
           window.setTimeout(() => reject(new Error('Sign-in is taking too long. Check your connection and try again.')), 12000);
@@ -112,35 +113,26 @@ export const AuthProvider = ({ children }) => {
           }
           throw new Error(error.message || 'Invalid email/phone or password.');
         }
-        const metadata = data.user.user_metadata || {};
-        const appMetadata = data.user.app_metadata || {};
-        const user = {
-          id: data.user.id,
-          email: data.user.email,
-          name: metadata.fullName || metadata.name || data.user.email?.split('@')[0],
-          phone: metadata.phone || '',
-          role: appMetadata.role === 'professional' ? 'worker' : (appMetadata.role || metadata.role || 'customer')
-        };
-        if (!data.user) {
-          throw new Error('Supabase did not return a user session. Confirm the account exists and the email is verified.');
+        if (!data?.user) {
+          throw new Error('No account session was returned. Please verify your credentials and try again.');
+        }
+        if (!data?.user || !data.session) {
+          const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError) throw sessionError;
+          if (!sessionData.session?.user) {
+            throw new Error('Sign-in completed without an active session. Please verify your account and try again.');
+          }
+          data.user = sessionData.session.user;
         }
         const nextUser = getUserFromSupabase(data.user);
         setCurrentUser(nextUser);
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
-        if (!data.session) {
-          const { data: sessionData } = await supabase.auth.getSession();
-          if (!sessionData.session) {
-            throw new Error('Your account needs email verification before you can sign in.');
-          }
-        }
         setIsLoading(false);
         return { success: true, user: nextUser };
       }
       const result = await apiLogin(phoneOrEmail, password, roleHint === 'professional' ? 'worker' : roleHint);
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-      return { success: true, user };
+          return { success: true, user };
     } finally {
       if (authRequestRef.current === requestId) {
         authRequestRef.current = 0;
@@ -154,47 +146,68 @@ export const AuthProvider = ({ children }) => {
     if (signupPassword.length < 8) {
       throw new Error('Password must be at least 8 characters.');
     }
-    if (!userData.email?.trim()) {
-      throw new Error('Enter a valid email address to create your account.');
+    const normalizedPhone = String(userData.phone || '').replace(/[^\d+]/g, '');
+    if (!/^\+91\d{10}$/.test(normalizedPhone)) {
+      throw new Error('Enter a valid 10-digit Indian mobile number.');
     }
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
         const { data, error } = await supabase.auth.signUp({
-          email: userData.email,
+          phone: normalizedPhone,
           password: signupPassword,
           options: {
             emailRedirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
             data: {
               fullName: userData.fullName,
-              phone: userData.phone,
+              phone: normalizedPhone,
               role: userData.role === 'professional' ? 'worker' : userData.role,
               trade: userData.trade
             }
           }
         });
         if (error) throw error;
-        const user = {
-          id: data.user?.id,
-          email: data.user?.email,
+        const user = data.user ? {
+          ...getUserFromSupabase(data.user),
           name: userData.fullName,
-          phone: userData.phone,
+          phone: normalizedPhone,
           role: userData.role === 'professional' ? 'worker' : userData.role
-        };
+        } : null;
         if (data.session) {
           setCurrentUser(user);
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-        }
-        return { success: true, user, requiresEmailConfirmation: !data.session };
+                }
+        return { success: true, user, requiresPhoneConfirmation: !data.session };
       }
       const result = await apiRegister({ ...userData, role: userData.role === 'professional' ? 'worker' : userData.role });
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-      return { success: true, user };
+          return { success: true, user };
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resendPhoneOtp = async (phone) => {
+    if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
+    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const { error } = await supabase.auth.signInWithOtp({ phone: normalizedPhone });
+    if (error) throw new Error(error.message || 'Unable to resend OTP.');
+    return { success: true };
+  };
+
+  const verifyPhoneOtp = async (phone, token, userData) => {
+    if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
+    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const { data, error } = await supabase.auth.verifyOtp({ phone: normalizedPhone, token: token.trim(), type: 'sms' });
+    if (error) throw new Error(error.message || 'Invalid OTP. Please try again.');
+    if (!data.user) throw new Error('Verification completed but no account was returned.');
+    const nextUser = { ...getUserFromSupabase(data.user), name: userData.fullName, phone: normalizedPhone, role: userData.role };
+    setCurrentUser(nextUser);
+      return { success: true, user: nextUser };
+  };
+
+  const updateUserSession = (updates) => {
+    setCurrentUser((previous) => previous ? { ...previous, ...updates } : previous);
   };
 
   const logout = async () => {
@@ -202,8 +215,7 @@ export const AuthProvider = ({ children }) => {
       await supabase.auth.signOut();
     }
     setCurrentUser(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-  };
+    };
 
   return (
     <AuthContext.Provider value={{
@@ -213,6 +225,12 @@ export const AuthProvider = ({ children }) => {
       isLoading,
       login,
       register,
+      verifyPhoneOtp,
+      resendPhoneOtp,
+      updateUserSession,
+      refreshUser: async () => {},
+      sendOtp: async () => ({ success: false, error: 'Use phone signup verification.' }),
+      verifyOtp: verifyPhoneOtp,
       logout
     }}>
       {children}

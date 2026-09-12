@@ -2,7 +2,7 @@ import React from 'react';
 import { ShieldCheck, MapPin, Heart, ArrowRight } from 'lucide-react';
 import { HOMMIE_CITIES } from '../data/hommieData';
 
-export default function HommieFooter({ onNavigate, onOpenLocationModal }) {
+export default function HommieFooter({ onNavigate, onOpenLocationModal, onOpenLegal }) {
   return (
     <footer className="bg-slate-950 text-slate-400 border-t border-slate-800 pt-12 pb-24 md:pb-12 mt-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -74,12 +74,14 @@ export default function HommieFooter({ onNavigate, onOpenLocationModal }) {
 
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} HOMMIE Technologies Pvt. Ltd. Hyperlocal On-Demand Services.</p>
-          <div className="flex items-center gap-4 text-xs">
-            <span>Terms of Service</span>
-            <span>•</span>
-            <span>Privacy Policy</span>
-            <span>•</span>
-            <span>Safety Guidelines</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+            <button type="button" onClick={() => onOpenLegal('terms')} className="hover:text-white transition">Terms of Service</button>
+            <span aria-hidden="true">•</span>
+            <button type="button" onClick={() => onOpenLegal('privacy')} className="hover:text-white transition">Privacy Policy</button>
+            <span aria-hidden="true">•</span>
+            <button type="button" onClick={() => onOpenLegal('safety')} className="hover:text-white transition">Safety Guidelines</button>
+            <span aria-hidden="true">•</span>
+            <a href="mailto:support@hommie.in" className="text-amber-400 hover:text-amber-300 transition">Support: support@hommie.in</a>
           </div>
         </div>
       </div>

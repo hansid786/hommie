@@ -69,6 +69,11 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
       setFormError('Upload an Aadhaar document to continue.');
       return;
     }
+    const allowedKycTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedKycTypes.includes(kycDocument.type)) {
+      setFormError('KYC document must be a JPG, PNG, or PDF file.');
+      return;
+    }
     setFormError('');
 
     const registered = registerNewProfessional({
@@ -84,7 +89,14 @@ export default function ProfessionalOnboardingView({ onCompleted, onBack }) {
       baseRate: Number(baseRate),
       about: about || `Experienced ${trade} with ${experienceYears} years of work across ${city}.`,
       upiId: upiId || `${phone}@upi`,
-      aadhaarNumber
+      aadhaarNumber: normalizedAadhaar,
+      kycStatus: 'under_review',
+      kycDocument: {
+        name: kycDocument.name,
+        type: kycDocument.type,
+        size: kycDocument.size,
+        uploadedAt: new Date().toISOString()
+      }
     });
 
     setSubmittedPro(registered);

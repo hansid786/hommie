@@ -3,6 +3,8 @@
 // Real marketplace lifecycle state machine, validation, and audit tracking
 // ============================================================================
 
+import { isSupabaseConfigured } from './supabase';
+
 import {
   HOMMIE_CITIES,
   HOMMIE_CATEGORIES,
@@ -26,21 +28,23 @@ const STORAGE_KEYS = {
 };
 
 // Safe localStorage loader with seed fallback
-function loadFromStorage(key, fallback) {
+function loadFromStorage(_key, fallback) {
+  if (isSupabaseConfigured) return fallback;
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(_key);
     if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn('[HOMMIE Storage Load Error]:', e);
+  } catch (error) {
+    console.warn('[HOMMIE Storage Load Error]:', error);
   }
   return fallback;
 }
 
 function saveToStorage(key, data) {
+  if (isSupabaseConfigured) return;
   try {
     localStorage.setItem(key, JSON.stringify(data));
-  } catch (e) {
-    console.warn('[HOMMIE Storage Save Error]:', e);
+  } catch (error) {
+    console.warn('[HOMMIE Storage Save Error]:', error);
   }
 }
 
