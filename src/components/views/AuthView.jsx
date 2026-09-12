@@ -19,8 +19,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
-export default function AuthView({ onSuccess, initialMode = 'login' }) {
-  const { login, register } = useAuth();
+export default function AuthView({ onSuccess, initialMode = 'register' }) {
+  const { login, register, verifyPhoneOtp } = useAuth();
   const { showToast } = useNotifications();
 
   const [mode, setMode] = useState(initialMode); // 'login' | 'register'
@@ -36,6 +36,8 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otp, setOtp] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -64,6 +66,10 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
   const handleRegister = async (e) => {
     e.preventDefault();
     setFormError('');
+    if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) {
+      setFormError('Enter a valid 10-digit mobile number.');
+      return;
+    }
     if (password.trim().length < 8) {
       setFormError('Password must be at least 8 characters.');
       return;
@@ -72,7 +78,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
     try {
       const res = await register({
         fullName: fullName || (role === 'worker' ? 'Arjun Singh' : 'Hanzala'),
-        phone: phone ? `+91 ${phone}` : '+91 98450 21984',
+        phone: `+91 ${phone.replace(/\D/g, '')}`,
         email: email.trim(),
         password: password.trim(),
         role,
@@ -83,8 +89,13 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
       });
 
       if (res.success) {
-        showToast(`Account created successfully! Welcome to the marketplace.`);
-        if (onSuccess) onSuccess(res.user);
+        if (res.requiresPhoneConfirmation) {
+          setOtpStep(true);
+          showToast('OTP sent to your mobile number.');
+        } else {
+          showToast(`Account created successfully! Welcome to the marketplace.`);
+          if (onSuccess) onSuccess(res.user);
+        }
       }
     } catch (error) {
       setFormError(error.message || 'Unable to create your account. Please check your details.');
@@ -245,6 +256,32 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+        ) : otpStep ? (
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setFormError('');
+            setIsSubmitting(true);
+            try {
+              const res = await verifyPhoneOtp(phone, otp, { fullName, role });
+              showToast(`Account created successfully! Welcome to HOMMIE.`);
+              if (onSuccess) onSuccess(res.user);
+            } catch (error) {
+              setFormError(error.message || 'Unable to verify OTP.');
+            } finally {
+              setIsSubmitting(false);
+            }
+          }} className="space-y-4 text-xs">
+            {formError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{formError}</div>}
+            <div>
+              <p className="text-sm font-bold text-slate-900">Verify your mobile number</p>
+              <p className="mt-1 text-xs text-slate-500">Enter the 6-digit OTP sent to +91 {phone}.</p>
+            </div>
+            <input autoFocus inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} placeholder="Enter 6-digit OTP" className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-mono tracking-[0.35em]" />
+            <button type="submit" disabled={isSubmitting || otp.length !== 6} className="w-full bg-slate-900 hover:bg-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50">
+              {isSubmitting ? 'Verifying OTP...' : 'Verify & Create Account'} <ArrowRight className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => { setOtpStep(false); setOtp(''); }} className="w-full text-xs font-bold text-slate-500 hover:text-slate-900">Back to account details</button>
+          </form>
         ) : (
           <form onSubmit={handleRegister} className="space-y-3.5 text-xs">
             <div>
@@ -259,6 +296,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
               />
             </div>
 
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-semibold text-emerald-800">Create your account with your mobile number. We&apos;ll send a one-time OTP after you set your password.</div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="font-bold text-slate-700 block mb-1">Mobile Number</label>
@@ -283,6 +321,20 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-medium"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1" htmlFor="signup-password">Create Password</label>
+              <input
+                id="signup-password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-mono"
+              />
             </div>
 
             {role === 'worker' && (

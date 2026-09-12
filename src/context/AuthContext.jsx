@@ -154,20 +154,21 @@ export const AuthProvider = ({ children }) => {
     if (signupPassword.length < 8) {
       throw new Error('Password must be at least 8 characters.');
     }
-    if (!userData.email?.trim()) {
-      throw new Error('Enter a valid email address to create your account.');
+    const normalizedPhone = String(userData.phone || '').replace(/[^\d+]/g, '');
+    if (!/^\+91\d{10}$/.test(normalizedPhone)) {
+      throw new Error('Enter a valid 10-digit Indian mobile number.');
     }
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
         const { data, error } = await supabase.auth.signUp({
-          email: userData.email,
+          phone: normalizedPhone,
           password: signupPassword,
           options: {
             emailRedirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
             data: {
               fullName: userData.fullName,
-              phone: userData.phone,
+              phone: normalizedPhone,
               role: userData.role === 'professional' ? 'worker' : userData.role,
               trade: userData.trade
             }
@@ -185,7 +186,7 @@ export const AuthProvider = ({ children }) => {
           setCurrentUser(user);
           localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
         }
-        return { success: true, user, requiresEmailConfirmation: !data.session };
+        return { success: true, user, requiresPhoneConfirmation: !data.session };
       }
       const result = await apiRegister({ ...userData, role: userData.role === 'professional' ? 'worker' : userData.role });
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
@@ -195,6 +196,18 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const verifyPhoneOtp = async (phone, token, userData) => {
+    if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
+    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const { data, error } = await supabase.auth.verifyOtp({ phone: normalizedPhone, token: token.trim(), type: 'sms' });
+    if (error) throw new Error(error.message || 'Invalid OTP. Please try again.');
+    if (!data.user) throw new Error('Verification completed but no account was returned.');
+    const nextUser = { ...getUserFromSupabase(data.user), name: userData.fullName, phone: normalizedPhone, role: userData.role };
+    setCurrentUser(nextUser);
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
+    return { success: true, user: nextUser };
   };
 
   const logout = async () => {
@@ -213,6 +226,7 @@ export const AuthProvider = ({ children }) => {
       isLoading,
       login,
       register,
+      verifyPhoneOtp,
       logout
     }}>
       {children}
