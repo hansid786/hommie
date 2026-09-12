@@ -77,12 +77,17 @@ export const initiateRazorpayPayment = async ({
       color: '#059669' // Emerald
     },
     handler: function (response) {
+      if (!response?.razorpay_payment_id || !response?.razorpay_order_id || !response?.razorpay_signature) {
+        if (onFailure) onFailure('Payment could not be verified. Please do not retry repeatedly; contact support if charged.');
+        return;
+      }
       if (onSuccess) {
         onSuccess({
           paymentId: response.razorpay_payment_id,
-          orderId: response.razorpay_order_id || `order_${Date.now()}`,
-          signature: response.razorpay_signature || 'sig_verified',
-          gateway: 'razorpay'
+          orderId: response.razorpay_order_id,
+          signature: response.razorpay_signature,
+          gateway: 'razorpay',
+          verificationRequired: true
         });
       }
     },

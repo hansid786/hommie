@@ -20,8 +20,8 @@ export default function HommiePaymentModal({ isOpen, onClose, booking, onPayment
     processBookingPayment(booking.id, {
       method,
       upiApp: null,
-      status: method === 'cash' ? 'pending_confirmation' : 'paid',
-      gateway: paymentDetails.gateway || 'manual_upi',
+      status: method === 'cash' || method === 'upi' ? 'pending_confirmation' : 'processing',
+      gateway: paymentDetails.gateway || (method === 'upi' ? 'manual_upi' : 'stripe'),
       paymentId: paymentDetails.paymentId || null,
       orderId: paymentDetails.orderId || null
     });
@@ -65,7 +65,7 @@ export default function HommiePaymentModal({ isOpen, onClose, booking, onPayment
           <button aria-label="Close payment" onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700"><X className="w-5 h-5" /></button>
         </div>
         {paymentDone ? (
-          <div className="py-8 text-center space-y-3"><div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto"><CheckCircle2 className="w-8 h-8" /></div><h3 className="text-xl font-extrabold text-slate-950">{method === 'cash' ? 'Cash payment requested' : 'UPI payment recorded'}</h3><p className="text-xs text-slate-500">{method === 'cash' ? `Pay ₹${finalAmount} directly to ${booking.workerName} after the service.` : `UPI reference will be verified by HOMMIE operations.`}</p></div>
+          <div className="py-8 text-center space-y-3"><div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto"><CheckCircle2 className="w-8 h-8" /></div><h3 className="text-xl font-extrabold text-slate-950">{method === 'cash' ? 'Cash payment requested' : method === 'upi' ? 'Payment submitted for verification' : 'Payment processing'}</h3><p className="text-xs text-slate-500">{method === 'cash' ? `Pay ₹${finalAmount} directly to ${booking.workerName} after the service.` : `Your payment is not marked complete until the gateway or HOMMIE operations verifies it.`}</p></div>
         ) : (
           <div className="mt-5 space-y-5">
             <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between"><div><span className="text-xs text-amber-900 font-semibold block">Total amount due</span><span className="text-2xl font-extrabold text-amber-950">₹{finalAmount}</span></div><span className="text-xs font-mono font-bold text-amber-800 bg-white px-2.5 py-1 rounded-lg border border-amber-200">{booking.bookingRef}</span></div>
