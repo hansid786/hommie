@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
           if (message.includes('rate limit')) {
             throw new Error('Too many attempts. Please wait a moment and try again.');
           }
-          throw new Error('Invalid email/phone or password.');
+          throw new Error(error.message || 'Invalid email/phone or password.');
         }
         const metadata = data.user.user_metadata || {};
         const appMetadata = data.user.app_metadata || {};
@@ -121,12 +121,18 @@ export const AuthProvider = ({ children }) => {
           phone: metadata.phone || '',
           role: appMetadata.role === 'professional' ? 'worker' : (appMetadata.role || metadata.role || 'customer')
         };
-        if (!data.session) {
-          throw new Error('Sign-in completed but no session was created. Please check Supabase email confirmation settings.');
+        if (!data.user) {
+          throw new Error('Supabase did not return a user session. Confirm the account exists and the email is verified.');
         }
-        const nextUser = getUserFromSupabase(data.session.user || data.user);
+        const nextUser = getUserFromSupabase(data.user);
         setCurrentUser(nextUser);
         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
+        if (!data.session) {
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (!sessionData.session) {
+            throw new Error('Your account needs email verification before you can sign in.');
+          }
+        }
         setIsLoading(false);
         return { success: true, user: nextUser };
       }

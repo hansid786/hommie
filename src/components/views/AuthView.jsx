@@ -110,7 +110,7 @@ export default function AuthView({ onSuccess, initialMode = 'login' }) {
         </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your service journey'}
+          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your HOMMIE journey'}
         </h1>
         <p className="text-xs text-slate-300 font-medium">
           {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
