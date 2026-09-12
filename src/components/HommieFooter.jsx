@@ -74,12 +74,14 @@ export default function HommieFooter({ onNavigate, onOpenLocationModal }) {
 
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} HOMMIE Technologies Pvt. Ltd. Hyperlocal On-Demand Services.</p>
-          <div className="flex items-center gap-4 text-xs">
-            <span>Terms of Service</span>
-            <span>•</span>
-            <span>Privacy Policy</span>
-            <span>•</span>
-            <span>Safety Guidelines</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+            <a href="/terms" className="hover:text-white transition">Terms of Service</a>
+            <span aria-hidden="true">•</span>
+            <a href="/privacy" className="hover:text-white transition">Privacy Policy</a>
+            <span aria-hidden="true">•</span>
+            <a href="/safety" className="hover:text-white transition">Safety Guidelines</a>
+            <span aria-hidden="true">•</span>
+            <a href="mailto:support@hommie.in" className="text-amber-400 hover:text-amber-300 transition">Support: support@hommie.in</a>
           </div>
         </div>
       </div>
