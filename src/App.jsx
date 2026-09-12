@@ -87,7 +87,7 @@ function HommieMainApp() {
     } else if (role === 'customer' && (currentView === 'pro-dashboard' || currentView === 'admin')) {
       setCurrentView('home');
     }
-  }, [role]);
+  }, [role, currentUser?.id]);
 
   if (isLoading) {
     return (

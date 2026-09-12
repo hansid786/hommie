@@ -121,10 +121,14 @@ export const AuthProvider = ({ children }) => {
           phone: metadata.phone || '',
           role: appMetadata.role === 'professional' ? 'worker' : (appMetadata.role || metadata.role || 'customer')
         };
-        setCurrentUser(user);
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+        if (!data.session) {
+          throw new Error('Sign-in completed but no session was created. Please check Supabase email confirmation settings.');
+        }
+        const nextUser = getUserFromSupabase(data.session.user || data.user);
+        setCurrentUser(nextUser);
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
         setIsLoading(false);
-        return { success: true, user };
+        return { success: true, user: nextUser };
       }
       const result = await apiLogin(phoneOrEmail, password, roleHint === 'professional' ? 'worker' : roleHint);
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
