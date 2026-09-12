@@ -131,8 +131,63 @@ ALTER TABLE public.customer_addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.disputes ENABLE ROW LEVEL SECURITY;
 
--- Allow public reads for workers and categories
-CREATE POLICY Public Profiles are viewable by everyone ON public.profiles FOR SELECT USING (true);
-CREATE POLICY Users can update own profile ON public.profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY Public Bookings access for participants ON public.bookings FOR ALL USING (true);
-CREATE POLICY Public Chat Messages access for participants ON public.chat_messages FOR ALL USING (true);
+-- Public catalog access should use a column-safe view in production; direct profile access is restricted.
+DROP POLICY IF EXISTS "Public Profiles are viewable by everyone" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Public Bookings access for participants" ON public.bookings;
+DROP POLICY IF EXISTS "Public Chat Messages access for participants" ON public.chat_messages;
+
+CREATE POLICY "Authenticated users can view profiles"
+  ON public.profiles FOR SELECT TO authenticated
+  USING (true);
+CREATE POLICY "Users can update own profile"
+  ON public.profiles FOR UPDATE TO authenticated
+  USING ((select auth.uid()) = id)
+  WITH CHECK ((select auth.uid()) = id);
+
+CREATE POLICY "Customers can view own bookings"
+  ON public.bookings FOR SELECT TO authenticated
+  USING ((select auth.uid()) = customer_id);
+CREATE POLICY "Workers can view assigned bookings"
+  ON public.bookings FOR SELECT TO authenticated
+  USING ((select auth.uid()) = worker_id);
+CREATE POLICY "Customers can create own bookings"
+  ON public.bookings FOR INSERT TO authenticated
+  WITH CHECK ((select auth.uid()) = customer_id);
+CREATE POLICY "Participants can update bookings"
+  ON public.bookings FOR UPDATE TO authenticated
+  USING ((select auth.uid()) = customer_id OR (select auth.uid()) = worker_id)
+  WITH CHECK ((select auth.uid()) = customer_id OR (select auth.uid()) = worker_id);
+
+CREATE POLICY "Booking participants can view messages"
+  ON public.chat_messages FOR SELECT TO authenticated
+  USING (EXISTS (
+    SELECT 1 FROM public.bookings b
+    WHERE b.id = booking_id
+      AND ((select auth.uid()) = b.customer_id OR (select auth.uid()) = b.worker_id)
+  ));
+CREATE POLICY "Booking participants can send messages"
+  ON public.chat_messages FOR INSERT TO authenticated
+  WITH CHECK ((select auth.uid()) = sender_id AND EXISTS (
+    SELECT 1 FROM public.bookings b
+    WHERE b.id = booking_id
+      AND ((select auth.uid()) = b.customer_id OR (select auth.uid()) = b.worker_id)
+  ));
+
+CREATE POLICY "Users can view own addresses"
+  ON public.customer_addresses FOR SELECT TO authenticated
+  USING ((select auth.uid()) = customer_id);
+CREATE POLICY "Users can manage own addresses"
+  ON public.customer_addresses FOR ALL TO authenticated
+  USING ((select auth.uid()) = customer_id)
+  WITH CHECK ((select auth.uid()) = customer_id);
+
+CREATE POLICY "Participants can view disputes"
+  ON public.disputes FOR SELECT TO authenticated
+  USING ((select auth.uid()) = raised_by_id OR EXISTS (
+    SELECT 1 FROM public.bookings b
+    WHERE b.id = booking_id AND ((select auth.uid()) = b.customer_id OR (select auth.uid()) = b.worker_id)
+  ));
+CREATE POLICY "Users can raise own disputes"
+  ON public.disputes FOR INSERT TO authenticated
+  WITH CHECK ((select auth.uid()) = raised_by_id);
