@@ -20,7 +20,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
 export default function AuthView({ onSuccess, initialMode = 'register' }) {
-  const { login, register, verifyPhoneOtp } = useAuth();
+  const { login, register, verifyPhoneOtp, resendPhoneOtp } = useAuth();
   const { showToast } = useNotifications();
 
   const [mode, setMode] = useState(initialMode); // 'login' | 'register'
@@ -280,6 +280,14 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
             <button type="submit" disabled={isSubmitting || otp.length !== 6} className="w-full bg-slate-900 hover:bg-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50">
               {isSubmitting ? 'Verifying OTP...' : 'Verify & Create Account'} <ArrowRight className="w-4 h-4" />
             </button>
+            <button type="button" onClick={async () => {
+              try {
+                await resendPhoneOtp(phone);
+                showToast('A new OTP has been sent.');
+              } catch (error) {
+                setFormError(error.message || 'Unable to resend OTP.');
+              }
+            }} className="w-full text-xs font-bold text-emerald-700 hover:text-emerald-900">Resend OTP</button>
             <button type="button" onClick={() => { setOtpStep(false); setOtp(''); }} className="w-full text-xs font-bold text-slate-500 hover:text-slate-900">Back to account details</button>
           </form>
         ) : (

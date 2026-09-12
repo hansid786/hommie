@@ -31,6 +31,7 @@ export default function HommieBookingModal({
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [specialNotes, setSpecialNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   if (!isOpen || !pro) return null;
 
@@ -47,10 +48,20 @@ export default function HommieBookingModal({
 
   const handleSubmitBooking = (e) => {
     e.preventDefault();
+    setFormError('');
+    if (!flatNumber.trim() || !street.trim()) {
+      setFormError('Enter your flat or house number and street address.');
+      return;
+    }
+    if (bookingMode === 'scheduled' && (!scheduledDate || !scheduledSlot)) {
+      setFormError('Choose a date and time slot for your visit.');
+      return;
+    }
     setIsSubmitting(true);
 
     setTimeout(() => {
-      const newBooking = createBooking({
+      try {
+        const newBooking = createBooking({
         workerId: pro.id,
         categoryId: category.id,
         serviceTitle: selectedService ? selectedService.service : `${category.name} Inspection & Repair`,
@@ -72,8 +83,12 @@ export default function HommieBookingModal({
         }
       });
 
-      setIsSubmitting(false);
-      onBookingSuccess(newBooking);
+        setIsSubmitting(false);
+        onBookingSuccess(newBooking);
+      } catch (error) {
+        setIsSubmitting(false);
+        setFormError(error.message || 'Unable to create this booking. Please try again.');
+      }
     }, 600);
   };
 
@@ -108,6 +123,7 @@ export default function HommieBookingModal({
         </div>
 
         <form onSubmit={handleSubmitBooking} className="mt-5 space-y-5">
+          {formError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{formError}</div>}
           {/* Mode Selector */}
           <div>
             <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">

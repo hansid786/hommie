@@ -175,13 +175,12 @@ export const AuthProvider = ({ children }) => {
           }
         });
         if (error) throw error;
-        const user = {
-          id: data.user?.id,
-          email: data.user?.email,
+        const user = data.user ? {
+          ...getUserFromSupabase(data.user),
           name: userData.fullName,
-          phone: userData.phone,
+          phone: normalizedPhone,
           role: userData.role === 'professional' ? 'worker' : userData.role
-        };
+        } : null;
         if (data.session) {
           setCurrentUser(user);
           localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
@@ -196,6 +195,14 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resendPhoneOtp = async (phone) => {
+    if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
+    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const { error } = await supabase.auth.signInWithOtp({ phone: normalizedPhone });
+    if (error) throw new Error(error.message || 'Unable to resend OTP.');
+    return { success: true };
   };
 
   const verifyPhoneOtp = async (phone, token, userData) => {
@@ -227,6 +234,7 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       verifyPhoneOtp,
+      resendPhoneOtp,
       logout
     }}>
       {children}
