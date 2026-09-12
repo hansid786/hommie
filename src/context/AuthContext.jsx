@@ -144,12 +144,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
+    const signupPassword = String(userData.password || '').trim();
+    if (signupPassword.length < 8) {
+      throw new Error('Password must be at least 8 characters.');
+    }
+    if (!userData.email?.trim()) {
+      throw new Error('Enter a valid email address to create your account.');
+    }
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
         const { data, error } = await supabase.auth.signUp({
           email: userData.email,
-          password: userData.password,
+          password: signupPassword,
           options: {
             emailRedirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
             data: {
