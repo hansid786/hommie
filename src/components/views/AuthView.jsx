@@ -53,7 +53,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
     try {
       const res = await login(identifier, password);
       if (res.success) {
-        showToast(`Welcome back, ${res.user.name}!`);
+        showToast(res.demo ? `Demo mode: welcome back, ${res.user.name}!` : `Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
       }
     } catch (error) {
@@ -126,6 +126,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
         <p className="text-xs text-slate-300 font-medium">
           {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
         </p>
+        {mode === 'login' && <p className="text-[11px] text-emerald-300 font-semibold">Demo: customer@hommie.demo · worker@hommie.demo · admin@hommie.demo · Password: Hommie@123</p>}
       </div>
 
       {/* Main Card */}

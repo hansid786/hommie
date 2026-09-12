@@ -77,6 +77,17 @@ export const AuthProvider = ({ children }) => {
     const requestId = ++authRequestRef.current;
     setIsLoading(true);
     try {
+      const demoIdentifier = normalizeIdentifier(phoneOrEmail).toLowerCase();
+      const demoAccounts = {
+        'customer@hommie.demo': { id: 'demo-customer', name: 'Hanzala', email: 'customer@hommie.demo', phone: '+919845077123', role: 'customer' },
+        'worker@hommie.demo': { id: 'demo-worker', name: 'Arjun Singh', email: 'worker@hommie.demo', phone: '+919900011223', role: 'worker', trade: 'AC Repair' },
+        'admin@hommie.demo': { id: 'demo-admin', name: 'HOMMIE Admin', email: 'admin@hommie.demo', phone: '+919900011224', role: 'admin' }
+      };
+      const demoUser = demoAccounts[demoIdentifier];
+      if (demoUser && password === 'Hommie@123') {
+        setCurrentUser(demoUser);
+        return { success: true, user: demoUser, demo: true };
+      }
       if (isSupabaseConfigured && supabase) {
         const identifier = normalizeIdentifier(phoneOrEmail);
         const normalizedPassword = password.trim();
