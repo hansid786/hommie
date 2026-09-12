@@ -27,6 +27,7 @@ import QuoteApprovalModal from './components/Modals/QuoteApprovalModal';
 import HommiePaymentModal from './components/Modals/HommiePaymentModal';
 import HommieRatingModal from './components/Modals/HommieRatingModal';
 import SafetyReportModal from './components/Modals/SafetyReportModal';
+import LegalModal from './components/Modals/LegalModal';
 import AppErrorBoundary from './components/AppErrorBoundary';
 
 import { getActiveLocality, getActiveCity, subscribeHommieState, recordAuditLog } from './services/hommieState';
@@ -78,6 +79,7 @@ function HommieMainApp() {
 
   const [showSafetyModal, setShowSafetyModal] = useState(false);
   const [safetyTarget, setSafetyTarget] = useState(null);
+  const [legalTab, setLegalTab] = useState(null);
 
   // Active Chat State
   const [activeChatBooking, setActiveChatBooking] = useState(null);
@@ -283,6 +285,7 @@ function HommieMainApp() {
         <HommieFooter
           onNavigate={navigateTo}
           onOpenLocationModal={() => setShowLocationModal(true)}
+          onOpenLegal={(tab) => setLegalTab(tab)}
         />
       )}
 
@@ -347,6 +350,10 @@ function HommieMainApp() {
         onClose={() => setShowSafetyModal(false)}
         target={safetyTarget}
       />
+
+      {legalTab && (
+        <LegalModal initialTab={legalTab} onClose={() => setLegalTab(null)} />
+      )}
 
       {/* 6. REALTIME CHAT DRAWER */}
       {activeChatBooking && (
