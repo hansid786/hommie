@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiLogin, apiRegister } from '../services/api';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 
-const AUTH_STORAGE_KEY = 'hommie_auth_user_v1';
 const AuthContext = createContext(null);
 
 const normalizeIdentifier = (value = '') => value.trim();
@@ -43,14 +42,12 @@ export const AuthProvider = ({ children }) => {
           setCurrentUser(nextUser);
         } else if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-        }
+                }
       } catch (error) {
         console.error('[v0] Auth initialization failed:', error);
         if (active && authRequestRef.current === 0) {
           setCurrentUser(null);
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-        }
+                }
       } finally {
         if (active) setIsLoading(false);
       }
@@ -68,8 +65,7 @@ export const AuthProvider = ({ children }) => {
       }
       const nextUser = getUserFromSupabase(session.user);
       setCurrentUser(nextUser);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
-    });
+        });
 
     return () => {
       active = false;
@@ -119,8 +115,7 @@ export const AuthProvider = ({ children }) => {
         }
         const nextUser = getUserFromSupabase(data.user);
         setCurrentUser(nextUser);
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
-        if (!data.session) {
+              if (!data.session) {
           const { data: sessionData } = await supabase.auth.getSession();
           if (!sessionData.session) {
             throw new Error('Your account needs email verification before you can sign in.');
@@ -132,8 +127,7 @@ export const AuthProvider = ({ children }) => {
       const result = await apiLogin(phoneOrEmail, password, roleHint === 'professional' ? 'worker' : roleHint);
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-      return { success: true, user };
+          return { success: true, user };
     } finally {
       if (authRequestRef.current === requestId) {
         authRequestRef.current = 0;
@@ -176,15 +170,13 @@ export const AuthProvider = ({ children }) => {
         } : null;
         if (data.session) {
           setCurrentUser(user);
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-        }
+                }
         return { success: true, user, requiresPhoneConfirmation: !data.session };
       }
       const result = await apiRegister({ ...userData, role: userData.role === 'professional' ? 'worker' : userData.role });
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-      return { success: true, user };
+          return { success: true, user };
     } finally {
       setIsLoading(false);
     }
@@ -206,8 +198,7 @@ export const AuthProvider = ({ children }) => {
     if (!data.user) throw new Error('Verification completed but no account was returned.');
     const nextUser = { ...getUserFromSupabase(data.user), name: userData.fullName, phone: normalizedPhone, role: userData.role };
     setCurrentUser(nextUser);
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
-    return { success: true, user: nextUser };
+      return { success: true, user: nextUser };
   };
 
   const updateUserSession = (updates) => {
@@ -219,8 +210,7 @@ export const AuthProvider = ({ children }) => {
       await supabase.auth.signOut();
     }
     setCurrentUser(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-  };
+    };
 
   return (
     <AuthContext.Provider value={{
