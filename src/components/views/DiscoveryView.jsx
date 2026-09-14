@@ -23,6 +23,7 @@ import {
   getActiveLocality,
   getActiveCity
 } from '../../services/hommieState';
+import Spatial3DCard from '../Common/Spatial3DCard';
 
 export default function DiscoveryView({
   initialCategory,
@@ -247,20 +248,22 @@ export default function DiscoveryView({
           </div>
         ) : (
           /* Grid of Professionals */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedPros.map((pro) => (
-              <div
+              <Spatial3DCard
                 key={pro.id}
-                className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-amber-400 transition flex flex-col justify-between overflow-hidden group"
+                maxTilt={12}
+                perspective={950}
+                className="bg-white rounded-3xl border border-slate-200/90 shadow-[0_12px_30px_rgba(19,34,56,0.06)] hover:shadow-[0_24px_50px_rgba(245,158,11,0.18)] hover:border-amber-400 transition-all flex flex-col justify-between overflow-hidden group"
               >
                 <div className="p-5">
                   {/* Top Row: Avatar & Badges */}
                   <div className="flex items-start gap-3.5">
-                    <div className="relative shrink-0">
+                    <div className="relative shrink-0" style={{ transform: 'translateZ(30px)' }}>
                       <img
                         src={pro.avatar}
                         alt={pro.name}
-                        className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-2xs"
+                        className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-md group-hover:scale-105 transition-transform"
                       />
                       {pro.availableNow && (
                         <span className="absolute -top-1 -left-1 px-1.5 py-0.5 rounded-md bg-emerald-600 text-white text-[9px] font-black shadow-xs flex items-center gap-0.5">
@@ -270,9 +273,9 @@ export default function DiscoveryView({
                       )}
                     </div>
 
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0" style={{ transform: 'translateZ(20px)' }}>
                       <div className="flex items-center gap-1.5">
-                        <h2 className="font-extrabold text-slate-950 text-base truncate">
+                        <h2 className="font-extrabold text-slate-950 text-base truncate group-hover:text-amber-600 transition">
                           {pro.name}
                         </h2>
                         {pro.verifications?.hommieVerified && (
@@ -302,12 +305,12 @@ export default function DiscoveryView({
                   </div>
 
                   {/* Headline */}
-                  <p className="text-xs text-slate-600 mt-3 line-clamp-2 leading-relaxed">
+                  <p style={{ transform: 'translateZ(15px)' }} className="text-xs text-slate-600 mt-3 line-clamp-2 leading-relaxed">
                     {pro.headline}
                   </p>
 
                   {/* Details Badges */}
-                  <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                  <div style={{ transform: 'translateZ(15px)' }} className="mt-3 flex flex-wrap items-center gap-1.5">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium">
                       <MapPin className="w-3 h-3 text-slate-400" />
                       {pro.primaryLocality}
@@ -324,7 +327,7 @@ export default function DiscoveryView({
                   </div>
 
                   {/* Pricing Overview */}
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <div style={{ transform: 'translateZ(20px)' }} className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-slate-400 uppercase font-bold">Inspection Visit</span>
                       <p className="text-xs font-extrabold text-slate-900">₹{pro.inspectionFee || 149}</p>
@@ -337,21 +340,21 @@ export default function DiscoveryView({
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="bg-slate-50/80 px-5 py-3 border-t border-slate-100 flex items-center gap-2">
+                <div style={{ transform: 'translateZ(25px)' }} className="bg-slate-50/80 px-5 py-3 border-t border-slate-100 flex items-center gap-2">
                   <button
                     onClick={() => onViewProProfile(pro.id)}
-                    className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-100 transition shadow-2xs"
+                    className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-100 transition shadow-2xs cursor-pointer"
                   >
                     Rate Card & Reviews
                   </button>
                   <button
                     onClick={() => onOpenBookingModal(pro)}
-                    className="flex-1 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs hover:bg-amber-400 transition shadow-xs"
+                    className="flex-1 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs hover:bg-amber-400 transition shadow-[0_3px_0_#b45309] active:translate-y-0.5 active:shadow-none cursor-pointer"
                   >
                     Book Visit
                   </button>
                 </div>
-              </div>
+              </Spatial3DCard>
             ))}
           </div>
         )}

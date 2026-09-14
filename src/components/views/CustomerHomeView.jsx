@@ -38,6 +38,8 @@ import {
   getCustomerServiceAddress,
   subscribeHommieState
 } from '../../services/hommieState';
+import Spatial3DCard from '../Common/Spatial3DCard';
+import ThreeDHeroVisual from '../Common/ThreeDHeroVisual';
 
 const categoryIcons = {
   'ac-service': Wind,
@@ -254,12 +256,19 @@ export default function CustomerHomeView({
               </form>
             </div>
 
-            {/* Right Dispatch Cards Column */}
+            {/* Right Dispatch & 3D Interactive Hub Column */}
             <div className="lg:col-span-5 space-y-4">
-              {/* Urgent Emergency Card */}
-              <div className="depth-card p-6 rounded-3xl bg-gradient-to-br from-amber-500/20 via-slate-900 to-slate-950 border border-amber-400/40 shadow-2xl backdrop-blur-xl relative overflow-hidden group hover:border-amber-400 transition-all">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-lg">
+              {/* Interactive 3D Spatial Master Visual */}
+              <ThreeDHeroVisual onQuickBook={() => onNavigate('discovery', { urgent: true })} />
+
+              {/* 3D Urgent Emergency Card with Tilt */}
+              <Spatial3DCard
+                maxTilt={10}
+                perspective={1000}
+                className="rounded-3xl bg-gradient-to-br from-amber-500/20 via-slate-900 to-slate-950 border border-amber-400/40 shadow-2xl backdrop-blur-xl p-5 sm:p-6"
+              >
+                <div style={{ transform: 'translateZ(20px)' }} className="flex items-center justify-between mb-3">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-lg">
                     <Zap className="w-6 h-6" />
                   </div>
                   <span className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-xs">
@@ -267,39 +276,23 @@ export default function CustomerHomeView({
                   </span>
                 </div>
 
-                <h3 className="font-extrabold text-white text-lg">Emergency Instant Dispatch</h3>
-                <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
-                  Sudden short circuits, burst pipes, or broken AC cooling. Nearest online technicians alerted instantly.
-                </p>
-
-                <button
-                  onClick={() => onNavigate('discovery', { urgent: true })}
-                  className="mt-5 w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-lg cursor-pointer"
-                >
-                  <span>Request Immediate Pro</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Scheduled Appointment Card */}
-              <div className="glass-panel depth-card p-5 rounded-3xl hover:bg-white/10 transition-all flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center font-bold shrink-0">
-                    <Calendar className="w-5 h-5 text-amber-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white text-sm">Schedule for Tomorrow or Later</h4>
-                    <p className="text-xs text-slate-400">Choose custom 2-hour slot & compare technician profiles</p>
-                  </div>
+                <div style={{ transform: 'translateZ(25px)' }}>
+                  <h3 className="font-extrabold text-white text-base sm:text-lg">Emergency Instant Dispatch</h3>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    Short circuits, water leaks, or broken cooling. Verified pros dispatched with live status.
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => onNavigate('discovery')}
-                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition shrink-0 cursor-pointer"
-                >
-                  Book Slot →
-                </button>
-              </div>
+                <div style={{ transform: 'translateZ(30px)' }}>
+                  <button
+                    onClick={() => onNavigate('discovery', { urgent: true })}
+                    className="mt-4 w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-[0_4px_0_#b45309] active:translate-y-1 active:shadow-none cursor-pointer"
+                  >
+                    <span>Request Immediate Pro</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </Spatial3DCard>
             </div>
           </div>
 
@@ -347,33 +340,45 @@ export default function CustomerHomeView({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {categories.map((cat) => {
             const Icon = categoryIcons[cat.id] || Sparkles;
             return (
-              <button
+              <Spatial3DCard
                 key={cat.id}
+                maxTilt={14}
+                perspective={800}
                 onClick={() => onSelectCategory(cat.slug)}
+<<<<<<< HEAD
                 className="depth-card group relative flex flex-col items-center p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 transition text-center cursor-pointer"
+=======
+                className="group relative flex flex-col items-center p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/90 hover:border-amber-400 shadow-[0_10px_25px_rgba(19,34,56,0.06)] hover:shadow-[0_20px_40px_rgba(245,158,11,0.18)] transition-all text-center cursor-pointer"
+>>>>>>> 3fe8d7c (feat(ui-3d): convert UI to interactive 3D spatial experience with tilt cards, depth planes, and 3D hero stage)
               >
                 {cat.badge && (
-                  <span className="absolute -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                  <span
+                    style={{ transform: 'translateZ(30px)' }}
+                    className="absolute -top-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-slate-950 shadow-md border border-amber-300"
+                  >
                     {cat.badge}
                   </span>
                 )}
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110 shadow-2xs"
+                  style={{ transform: 'translateZ(25px)' }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110 shadow-sm"
                   style={{ backgroundColor: `${cat.accentColor}18`, color: cat.accentColor }}
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-7 h-7" />
                 </div>
-                <h3 className="font-extrabold text-slate-900 text-sm group-hover:text-amber-700 transition">
-                  {cat.shortName}
-                </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5 font-medium">
-                  Insp: <strong>₹{cat.inspectionFee}</strong>
-                </p>
-              </button>
+                <div style={{ transform: 'translateZ(18px)' }}>
+                  <h3 className="font-extrabold text-slate-950 text-sm group-hover:text-amber-700 transition">
+                    {cat.shortName}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-1 font-semibold">
+                    Insp: <strong className="text-slate-900">₹{cat.inspectionFee}</strong>
+                  </p>
+                </div>
+              </Spatial3DCard>
             );
           })}
         </div>
@@ -381,8 +386,12 @@ export default function CustomerHomeView({
 
       {/* 3. MY HOME MAINTENANCE SNAPSHOT */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
-          <div className="relative z-10 max-w-xl">
+        <Spatial3DCard
+          maxTilt={6}
+          perspective={1200}
+          className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-8 text-white shadow-[0_25px_60px_rgba(0,0,0,0.5)] relative overflow-hidden border border-slate-800"
+        >
+          <div className="relative z-10 max-w-xl" style={{ transform: 'translateZ(25px)' }}>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold mb-3 border border-amber-400/30">
               <Home className="w-3.5 h-3.5" />
               <span>Digital Appliance Passport</span>
@@ -397,7 +406,7 @@ export default function CustomerHomeView({
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => onNavigate('my-home')}
-                className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm hover:bg-amber-400 transition inline-flex items-center gap-2 shadow-md"
+                className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm hover:bg-amber-400 transition inline-flex items-center gap-2 shadow-[0_4px_0_#b45309] active:translate-y-1 active:shadow-none cursor-pointer"
               >
                 <span>Open My Home ({homeAssets.length} Logged)</span>
                 <ArrowRight className="w-4 h-4" />
@@ -405,9 +414,9 @@ export default function CustomerHomeView({
             </div>
           </div>
 
-          <div className="hidden lg:grid grid-cols-2 gap-3 absolute right-6 top-6 bottom-6 w-96 opacity-95">
+          <div className="hidden lg:grid grid-cols-2 gap-3 absolute right-6 top-6 bottom-6 w-96 opacity-95" style={{ transform: 'translateZ(40px)' }}>
             {homeAssets.slice(0, 2).map((asset) => (
-              <div key={asset.id} className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col justify-between">
+              <div key={asset.id} className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col justify-between shadow-lg">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
                     {asset.location}
@@ -421,7 +430,7 @@ export default function CustomerHomeView({
               </div>
             ))}
           </div>
-        </div>
+        </Spatial3DCard>
       </section>
 
       {/* 4. VERIFIED NEIGHBORHOOD PROFESSIONALS */}
@@ -433,7 +442,7 @@ export default function CustomerHomeView({
               <span>Aadhaar & Police Background Checked</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950 tracking-tight">
-              Verified Pros in {activeLocality?.name || 'Indiranagar'}
+              Verified Pros in {activeLocality?.name || 'Gomti Nagar'}
             </h2>
           </div>
 
@@ -446,19 +455,21 @@ export default function CustomerHomeView({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {featuredPros.map((pro) => (
-            <div
+            <Spatial3DCard
               key={pro.id}
-              className="bg-white rounded-3xl border border-slate-200/90 p-5 shadow-sm hover:shadow-md hover:border-amber-400 transition flex flex-col justify-between group"
+              maxTilt={12}
+              perspective={900}
+              className="bg-white rounded-3xl border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(19,34,56,0.06)] hover:shadow-[0_24px_45px_rgba(245,158,11,0.15)] hover:border-amber-400 transition-all flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-start gap-3.5">
-                  <div className="relative shrink-0">
+                  <div className="relative shrink-0" style={{ transform: 'translateZ(30px)' }}>
                     <img
                       src={pro.avatar}
                       alt={pro.name}
-                      className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shadow-2xs"
+                      className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shadow-md group-hover:scale-105 transition-transform"
                     />
                     {pro.verifications?.hommieVerified && (
                       <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center border-2 border-white shadow-xs" title="HOMMIE Verified Pro">
@@ -466,7 +477,7 @@ export default function CustomerHomeView({
                       </span>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0" style={{ transform: 'translateZ(20px)' }}>
                     <h3 className="font-extrabold text-slate-900 text-sm truncate group-hover:text-amber-600 transition">
                       {pro.name}
                     </h3>
@@ -482,11 +493,11 @@ export default function CustomerHomeView({
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 mt-3 line-clamp-2 leading-relaxed">
+                <p style={{ transform: 'translateZ(15px)' }} className="text-xs text-slate-600 mt-3 line-clamp-2 leading-relaxed">
                   {pro.headline}
                 </p>
 
-                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <div style={{ transform: 'translateZ(15px)' }} className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                   <span className="inline-flex items-center gap-1 font-medium">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
                     {pro.primaryLocality}
@@ -497,21 +508,21 @@ export default function CustomerHomeView({
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 flex items-center gap-2">
+              <div style={{ transform: 'translateZ(25px)' }} className="mt-4 pt-3 flex items-center gap-2">
                 <button
                   onClick={() => onViewProProfile(pro.id)}
-                  className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs hover:bg-slate-200 transition"
+                  className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs hover:bg-slate-200 transition cursor-pointer"
                 >
                   Profile & Rates
                 </button>
                 <button
                   onClick={() => onOpenBookingModal(pro)}
-                  className="flex-1 py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs hover:bg-amber-400 transition shadow-2xs"
+                  className="flex-1 py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs hover:bg-amber-400 transition shadow-[0_3px_0_#b45309] active:translate-y-0.5 active:shadow-none cursor-pointer"
                 >
                   Book Visit
                 </button>
               </div>
-            </div>
+            </Spatial3DCard>
           ))}
         </div>
       </section>
