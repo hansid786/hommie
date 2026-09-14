@@ -349,11 +349,7 @@ export default function CustomerHomeView({
                 maxTilt={14}
                 perspective={800}
                 onClick={() => onSelectCategory(cat.slug)}
-<<<<<<< HEAD
-                className="depth-card group relative flex flex-col items-center p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 transition text-center cursor-pointer"
-=======
                 className="group relative flex flex-col items-center p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/90 hover:border-amber-400 shadow-[0_10px_25px_rgba(19,34,56,0.06)] hover:shadow-[0_20px_40px_rgba(245,158,11,0.18)] transition-all text-center cursor-pointer"
->>>>>>> 3fe8d7c (feat(ui-3d): convert UI to interactive 3D spatial experience with tilt cards, depth planes, and 3D hero stage)
               >
                 {cat.badge && (
                   <span
