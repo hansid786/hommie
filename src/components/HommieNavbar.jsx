@@ -23,7 +23,7 @@ export default function HommieNavbar({
   );
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_1px_16px_rgba(19,34,56,0.05)]">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_1px_16px_rgba(19,34,56,0.05)] [transform:translateZ(0)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[4.5rem] flex items-center justify-between gap-3">
         {/* Brand & Locality */}
         <div className="flex items-center gap-3 sm:gap-4">
@@ -35,7 +35,7 @@ export default function HommieNavbar({
             }}
             className="flex items-center gap-2.5 text-left cursor-pointer group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#132238] text-amber-400 flex items-center justify-center font-black text-lg shadow-sm group-hover:bg-[#203653] transition">
+            <div             className="depth-card w-10 h-10 rounded-xl bg-[#132238] text-amber-400 flex items-center justify-center font-black text-lg shadow-sm group-hover:bg-[#203653] transition">
               H
             </div>
             <div>

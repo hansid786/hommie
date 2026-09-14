@@ -116,7 +116,7 @@ export default function CustomerHomeView({
   return (
     <div className="min-h-screen bg-slate-50/70 text-slate-900 pb-24 md:pb-16 font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. HERO SECTION - PREMIUM COMMERCIAL GRADE */}
-      <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white pt-8 sm:pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 overflow-hidden">
+      <section className="scene-3d relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white pt-8 sm:pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 overflow-hidden">
         {/* Subtle Background Glows */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute top-1/2 right-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -202,7 +202,7 @@ export default function CustomerHomeView({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Headline Column */}
             <div className="lg:col-span-7 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold">
+              <div className="depth-card inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>Zero Middleman Commissions • 95% Direct Pro Payouts</span>
               </div>
@@ -257,7 +257,7 @@ export default function CustomerHomeView({
             {/* Right Dispatch Cards Column */}
             <div className="lg:col-span-5 space-y-4">
               {/* Urgent Emergency Card */}
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-amber-500/20 via-slate-900 to-slate-950 border border-amber-400/40 shadow-2xl backdrop-blur-xl relative overflow-hidden group hover:border-amber-400 transition-all">
+              <div className="depth-card p-6 rounded-3xl bg-gradient-to-br from-amber-500/20 via-slate-900 to-slate-950 border border-amber-400/40 shadow-2xl backdrop-blur-xl relative overflow-hidden group hover:border-amber-400 transition-all">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-lg">
                     <Zap className="w-6 h-6" />
@@ -282,7 +282,7 @@ export default function CustomerHomeView({
               </div>
 
               {/* Scheduled Appointment Card */}
-              <div className="p-5 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all backdrop-blur-md flex items-center justify-between gap-4">
+              <div className="glass-panel depth-card p-5 rounded-3xl hover:bg-white/10 transition-all flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center font-bold shrink-0">
                     <Calendar className="w-5 h-5 text-amber-400" />
@@ -354,7 +354,7 @@ export default function CustomerHomeView({
               <button
                 key={cat.id}
                 onClick={() => onSelectCategory(cat.slug)}
-                className="group relative flex flex-col items-center p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-md transition text-center cursor-pointer"
+                className="depth-card group relative flex flex-col items-center p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 transition text-center cursor-pointer"
               >
                 {cat.badge && (
                   <span className="absolute -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
