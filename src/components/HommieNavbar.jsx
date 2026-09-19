@@ -23,7 +23,7 @@ export default function HommieNavbar({
   );
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_1px_16px_rgba(19,34,56,0.05)] [transform:translateZ(0)]">
+    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/85 shadow-[0_4px_20px_rgba(19,34,56,0.06)] backdrop-blur-2xl [transform:translateZ(0)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[4.5rem] flex items-center justify-between gap-3">
         {/* Brand & Locality */}
         <div className="flex items-center gap-3 sm:gap-4">
@@ -71,7 +71,7 @@ export default function HommieNavbar({
           <button
             onClick={() => onNavigate('home')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-              currentView === 'home' ? 'bg-amber-500 text-slate-950' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
+              currentView === 'home' ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200/70' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
             }`}
           >
             Home
@@ -80,7 +80,7 @@ export default function HommieNavbar({
           <button
             onClick={() => onNavigate('discovery')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-              currentView === 'discovery' ? 'bg-amber-500 text-slate-950' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
+              currentView === 'discovery' ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200/70' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
             }`}
           >
             Find Pros
@@ -89,7 +89,7 @@ export default function HommieNavbar({
           <button
             onClick={() => onNavigate('my-home')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
-              currentView === 'my-home' ? 'bg-amber-500 text-slate-950' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
+              currentView === 'my-home' ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200/70' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
             }`}
           >
             <Home className="w-3.5 h-3.5" />
@@ -99,7 +99,7 @@ export default function HommieNavbar({
           <button
             onClick={() => onNavigate('bookings')}
             className={`relative px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
-              currentView === 'bookings' ? 'bg-amber-500 text-slate-950' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
+              currentView === 'bookings' ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200/70' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />

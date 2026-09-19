@@ -8,8 +8,8 @@
     --surface: #ffffff;
     --canvas: #f6f8f7;
     --line: #dfe7e3;
-    --depth-shadow: 0 22px 55px -28px rgba(15, 23, 42, 0.45);
-    --depth-shadow-strong: 0 34px 70px -30px rgba(15, 23, 42, 0.55);
+    --depth-shadow: 0 12px 32px -18px rgba(15, 23, 42, 0.28);
+    --depth-shadow-strong: 0 20px 48px -22px rgba(15, 23, 42, 0.38);
     --perspective: 1200px;
   }
 
@@ -20,6 +20,7 @@
   body {
     background-color: var(--canvas);
     color: var(--brand-primary);
+    min-width: 320px;
     font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding: 0;
@@ -36,7 +37,7 @@
   border-radius: 1.25rem;
   box-shadow: var(--depth-shadow);
   transform: translateZ(0);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
   will-change: transform;
 }
 
@@ -131,6 +132,14 @@
   .depth-card:hover {
     transform: none;
   }
+}
+
+button, a, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active, a:active {
+  transform: scale(0.98);
 }
 
 /* Minimal smooth scrollbar */
