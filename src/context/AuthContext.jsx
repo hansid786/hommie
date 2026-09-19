@@ -191,9 +191,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const normalizeIndianPhone = (phone) => {
+    const digits = String(phone || '').replace(/\D/g, '');
+    if (digits.length === 10) return `+91${digits}`;
+    if (digits.length === 12 && digits.startsWith('91')) return `+${digits}`;
+    return String(phone || '').replace(/[^\d+]/g, '');
+  };
+
   const resendPhoneOtp = async (phone) => {
     if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
-    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const normalizedPhone = normalizeIndianPhone(phone);
     const { error } = await supabase.auth.signInWithOtp({ phone: normalizedPhone });
     if (error) throw new Error(error.message || 'Unable to resend OTP.');
     return { success: true };
@@ -201,7 +208,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyPhoneOtp = async (phone, token, userData) => {
     if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
-    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const normalizedPhone = normalizeIndianPhone(phone);
     const { data, error } = await supabase.auth.verifyOtp({ phone: normalizedPhone, token: token.trim(), type: 'sms' });
     if (error) throw new Error(error.message || 'Invalid OTP. Please try again.');
     if (!data.user) throw new Error('Verification completed but no account was returned.');
