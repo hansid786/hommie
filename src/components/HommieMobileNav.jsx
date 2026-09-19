@@ -11,13 +11,13 @@ export default function HommieMobileNav({ currentView, onNavigate }) {
   );
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 px-2 py-2.5 flex items-center justify-around shadow-[0_-8px_24px_rgba(19,34,56,0.08)]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-slate-200/70 bg-white/90 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgba(19,34,56,0.08)] backdrop-blur-2xl">
       {role === 'customer' && (
         <>
           <button
             onClick={() => onNavigate('home')}
             className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
-              currentView === 'home' ? 'text-amber-600 font-bold' : 'text-slate-500'
+              currentView === 'home' ? 'bg-amber-50 text-amber-700 font-bold' : 'text-slate-500 hover:bg-slate-50'
             }`}
           >
             <Home className="w-5 h-5" />
@@ -27,7 +27,7 @@ export default function HommieMobileNav({ currentView, onNavigate }) {
           <button
             onClick={() => onNavigate('discovery')}
             className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
-              currentView === 'discovery' ? 'text-amber-600 font-bold' : 'text-slate-500'
+              currentView === 'discovery' ? 'bg-amber-50 text-amber-700 font-bold' : 'text-slate-500 hover:bg-slate-50'
             }`}
           >
             <Search className="w-5 h-5" />
@@ -37,7 +37,7 @@ export default function HommieMobileNav({ currentView, onNavigate }) {
           <button
             onClick={() => onNavigate('my-home')}
             className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
-              currentView === 'my-home' ? 'text-amber-600 font-bold' : 'text-slate-500'
+              currentView === 'my-home' ? 'bg-amber-50 text-amber-700 font-bold' : 'text-slate-500 hover:bg-slate-50'
             }`}
           >
             <User className="w-5 h-5" />
@@ -47,7 +47,7 @@ export default function HommieMobileNav({ currentView, onNavigate }) {
           <button
             onClick={() => onNavigate('bookings')}
             className={`relative flex flex-col items-center py-1 px-3 rounded-xl transition ${
-              currentView === 'bookings' ? 'text-amber-600 font-bold' : 'text-slate-500'
+              currentView === 'bookings' ? 'bg-amber-50 text-amber-700 font-bold' : 'text-slate-500 hover:bg-slate-50'
             }`}
           >
             <Calendar className="w-5 h-5" />
