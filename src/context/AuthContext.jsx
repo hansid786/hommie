@@ -146,6 +146,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
+    const requestId = ++authRequestRef.current;
     const signupPassword = String(userData.password || '').trim();
     if (signupPassword.length < 8) {
       throw new Error('Password must be at least 8 characters.');
@@ -177,16 +178,22 @@ export const AuthProvider = ({ children }) => {
           phone: normalizedPhone,
           role: userData.role === 'professional' ? 'worker' : userData.role
         } : null;
-        if (data.session) {
-          setCurrentUser(user);
-                }
-        return { success: true, user, requiresPhoneConfirmation: !data.session };
+        if (!user) {
+          throw new Error('Registration completed without an account. Please try again.');
+        }
+        // Continue into the app immediately after registration. Supabase may
+        // require phone confirmation, but the profile is already created.
+        setCurrentUser(user);
+        return { success: true, user, requiresPhoneConfirmation: false };
       }
       const result = await apiRegister({ ...userData, role: userData.role === 'professional' ? 'worker' : userData.role });
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
           return { success: true, user };
     } finally {
+      if (authRequestRef.current === requestId) {
+        authRequestRef.current = 0;
+      }
       setIsLoading(false);
     }
   };
