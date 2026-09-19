@@ -2,14 +2,16 @@
 
 @layer base {
   :root {
-    --brand-primary: #132238;
+    --brand-primary: #172554;
     --brand-accent: #0f766e;
-    --brand-action: #d97706;
+    --brand-action: #f97316;
+    --brand-pink: #ec4899;
+    --brand-violet: #7c3aed;
     --surface: #ffffff;
-    --canvas: #f6f8f7;
-    --line: #dfe7e3;
-    --depth-shadow: 0 12px 32px -18px rgba(15, 23, 42, 0.28);
-    --depth-shadow-strong: 0 20px 48px -22px rgba(15, 23, 42, 0.38);
+    --canvas: #f7f7ff;
+    --line: #e5e7eb;
+    --depth-shadow: 0 12px 32px -18px rgba(30, 41, 59, 0.28);
+    --depth-shadow-strong: 0 20px 48px -22px rgba(30, 41, 59, 0.38);
     --perspective: 1200px;
   }
 
@@ -18,7 +20,11 @@
   }
 
   body {
-    background-color: var(--canvas);
+    background:
+      radial-gradient(circle at 8% 0%, rgba(129, 140, 248, 0.22), transparent 28rem),
+      radial-gradient(circle at 92% 8%, rgba(244, 114, 182, 0.18), transparent 25rem),
+      radial-gradient(circle at 50% 100%, rgba(45, 212, 191, 0.14), transparent 30rem),
+      var(--canvas);
     color: var(--brand-primary);
     min-width: 320px;
     font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', 'Segoe UI', Roboto, sans-serif;
@@ -48,17 +54,18 @@
 }
 
 .app-btn-primary {
-  background: #0f172a;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed 52%, #ec4899);
   color: #ffffff;
   font-weight: 700;
   border-radius: 0.875rem;
   transition: all 0.2s ease;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
 }
 
 .app-btn-primary:hover {
-  background: #1e293b;
+  background: linear-gradient(135deg, #4338ca, #6d28d9 52%, #db2777);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 12px 26px rgba(124, 58, 237, 0.3);
 }
 
 .app-btn-primary:active {
