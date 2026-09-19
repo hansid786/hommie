@@ -51,7 +51,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
 
     setIsSubmitting(true);
     try {
-      const res = await login(identifier, password, role);
+      const res = await login(identifier, password);
       if (res.success) {
         showToast(res.demo ? `Demo mode: welcome back, ${res.user.name}!` : `Welcome back, ${res.user.name}!`);
         if (onSuccess) onSuccess(res.user);
@@ -124,9 +124,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
           {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your HOMMIE journey'}
         </h1>
         <p className="text-xs text-slate-300 font-medium">
-          {mode === 'login'
-            ? role === 'customer' ? 'Sign in to book trusted professionals.' : 'Sign in to manage jobs and grow your service business.'
-            : role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
+          {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
         </p>
         {mode === 'login' && <p className="text-[11px] text-emerald-300 font-semibold">Demo: customer@hommie.demo · worker@hommie.demo · admin@hommie.demo · Password: Hommie@123</p>}
       </div>
@@ -161,7 +159,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
         </div>
 
         {/* Role Selection */}
-        <div className="space-y-1.5">
+        {mode === 'register' && <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Select Your Role
           </label>
@@ -206,7 +204,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
               </div>
             </button>
           </div>
-        </div>
+        </div>}
 
         {/* Form Body */}
         {mode === 'login' ? (
