@@ -142,6 +142,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
+    const requestId = ++authRequestRef.current;
     const signupPassword = String(userData.password || '').trim();
     if (signupPassword.length < 8) {
       throw new Error('Password must be at least 8 characters.');
@@ -173,23 +174,36 @@ export const AuthProvider = ({ children }) => {
           phone: normalizedPhone,
           role: userData.role === 'professional' ? 'worker' : userData.role
         } : null;
-        if (data.session) {
-          setCurrentUser(user);
-                }
-        return { success: true, user, requiresPhoneConfirmation: !data.session };
+        if (!user) {
+          throw new Error('Registration completed without an account. Please try again.');
+        }
+        // Continue into the app immediately after registration. Supabase may
+        // require phone confirmation, but the profile is already created.
+        setCurrentUser(user);
+        return { success: true, user, requiresPhoneConfirmation: false };
       }
       const result = await apiRegister({ ...userData, role: userData.role === 'professional' ? 'worker' : userData.role });
       const user = { ...result.user, role: result.user.role === 'professional' ? 'worker' : result.user.role };
       setCurrentUser(user);
           return { success: true, user };
     } finally {
+      if (authRequestRef.current === requestId) {
+        authRequestRef.current = 0;
+      }
       setIsLoading(false);
     }
   };
 
+  const normalizeIndianPhone = (phone) => {
+    const digits = String(phone || '').replace(/\D/g, '');
+    if (digits.length === 10) return `+91${digits}`;
+    if (digits.length === 12 && digits.startsWith('91')) return `+${digits}`;
+    return String(phone || '').replace(/[^\d+]/g, '');
+  };
+
   const resendPhoneOtp = async (phone) => {
     if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
-    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const normalizedPhone = normalizeIndianPhone(phone);
     const { error } = await supabase.auth.signInWithOtp({ phone: normalizedPhone });
     if (error) throw new Error(error.message || 'Unable to resend OTP.');
     return { success: true };
@@ -197,7 +211,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyPhoneOtp = async (phone, token, userData) => {
     if (!isSupabaseConfigured || !supabase) throw new Error('Phone verification is unavailable.');
-    const normalizedPhone = String(phone || '').replace(/[^\d+]/g, '');
+    const normalizedPhone = normalizeIndianPhone(phone);
     const { data, error } = await supabase.auth.verifyOtp({ phone: normalizedPhone, token: token.trim(), type: 'sms' });
     if (error) throw new Error(error.message || 'Invalid OTP. Please try again.');
     if (!data.user) throw new Error('Verification completed but no account was returned.');

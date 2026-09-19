@@ -20,15 +20,13 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
 export default function AuthView({ onSuccess, initialMode = 'register' }) {
-  const { login, register, verifyPhoneOtp, resendPhoneOtp } = useAuth();
+  const { register, verifyPhoneOtp, resendPhoneOtp } = useAuth();
   const { showToast } = useNotifications();
 
-  const [mode, setMode] = useState(initialMode); // 'login' | 'register'
   const [role, setRole] = useState('customer'); // 'customer' | 'worker'
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [loginIdentifier, setLoginIdentifier] = useState('');
   const [trade, setTrade] = useState('AC Repair');
   const [locality, setLocality] = useState('Gomti Nagar, Lucknow');
   const [baseRate, setBaseRate] = useState('349');
@@ -38,30 +36,6 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
   const [otp, setOtp] = useState('');
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setFormError('');
-
-    const identifier = loginIdentifier.trim();
-    if (!identifier || !password) {
-      setFormError('Enter your email or phone number and password to continue.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const res = await login(identifier, password);
-      if (res.success) {
-        showToast(res.demo ? `Demo mode: welcome back, ${res.user.name}!` : `Welcome back, ${res.user.name}!`);
-        if (onSuccess) onSuccess(res.user);
-      }
-    } catch (error) {
-      setFormError(error.message || 'Unable to sign in. Please check your details.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -121,43 +95,16 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
         </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          {mode === 'login' ? 'Welcome back to HOMMIE' : 'Start your HOMMIE journey'}
+          Start your HOMMIE journey
         </h1>
         <p className="text-xs text-slate-300 font-medium">
-          {role === 'customer' ? 'Book trusted professionals for every home need.' : 'Grow your local service business with better jobs.'}
+          {role === 'customer' ? 'Create your account and book trusted professionals.' : 'Create your partner profile and start receiving jobs.'}
         </p>
-        {mode === 'login' && <p className="text-[11px] text-emerald-300 font-semibold">Demo: customer@hommie.demo · worker@hommie.demo · admin@hommie.demo · Password: Hommie@123</p>}
       </div>
 
       {/* Main Card */}
       <div className="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200/80 space-y-6">
         
-        {/* Mode Switcher (Sign In vs Register) */}
-        <div className="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-2xl text-xs font-bold">
-          <button
-            type="button"
-            onClick={() => setMode('login')}
-            className={`py-2.5 rounded-xl transition-all cursor-pointer ${
-              mode === 'login'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('register')}
-            className={`py-2.5 rounded-xl transition-all cursor-pointer ${
-              mode === 'register'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Create Account
-          </button>
-        </div>
-
         {/* Role Selection */}
         {mode === 'register' && <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
@@ -206,58 +153,8 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
           </div>
         </div>}
 
-        {/* Form Body */}
-        {mode === 'login' ? (
-          <form onSubmit={handleLogin} className="space-y-4 text-xs">
-            {formError && (
-              <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">
-                {formError}
-              </div>
-            )}
-            <div>
-              <label className="font-bold text-slate-700 block mb-1" htmlFor="login-identifier">
-                Email address or registered phone
-              </label>
-              <div className="relative">
-                <input
-                  id="login-identifier"
-                  type="text"
-                  required
-                  placeholder="you@example.com or +91 98450 21984"
-                  value={loginIdentifier}
-                  onChange={(e) => setLoginIdentifier(e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-medium"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="font-bold text-slate-700" htmlFor="login-password">Password</label>
-                <span className="text-[11px] text-slate-400 font-semibold">Secure sign-in</span>
-              </div>
-              <input
-                id="login-password"
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-600 font-mono"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-slate-900 hover:bg-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50"
-            >
-              <span>{isSubmitting ? 'Verifying Credentials...' : 'Sign In to Dashboard'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-        ) : otpStep ? (
+        {/* Registration flow */}
+        {otpStep ? (
           <form onSubmit={async (e) => {
             e.preventDefault();
             setFormError('');
