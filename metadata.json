@@ -1,0 +1,8 @@
+{
+  "name": "HOMMIE",
+  "description": "Hyperlocal Skilled Services & Home Care platform connecting homeowners with trusted independent electricians, plumbers, AC technicians, and cleaners.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

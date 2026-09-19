@@ -106,7 +106,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
       <div className="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200/80 space-y-6">
         
         {/* Role Selection */}
-        <div className="space-y-1.5">
+        {mode === 'register' && <div className="space-y-1.5">
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Select Your Role
           </label>
@@ -151,7 +151,7 @@ export default function AuthView({ onSuccess, initialMode = 'register' }) {
               </div>
             </button>
           </div>
-        </div>
+        </div>}
 
         {/* Registration flow */}
         {otpStep ? (

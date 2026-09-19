@@ -6,10 +6,10 @@ const AuthContext = createContext(null);
 
 const normalizeIdentifier = (value = '') => value.trim();
 
-const getUserFromSupabase = (authUser, roleHint = 'customer') => {
+const getUserFromSupabase = (authUser) => {
   const metadata = authUser.user_metadata || {};
   const appMetadata = authUser.app_metadata || {};
-  const role = appMetadata.role || metadata.role || roleHint || 'customer';
+  const role = appMetadata.role || metadata.role || 'customer';
   return {
     id: authUser.id,
     email: authUser.email,
@@ -85,9 +85,6 @@ export const AuthProvider = ({ children }) => {
       };
       const demoUser = demoAccounts[demoIdentifier];
       if (demoUser && password === 'Hommie@123') {
-        if (demoUser.role !== roleHint) {
-          throw new Error(`This account is set up as a ${demoUser.role}. Select the matching account type.`);
-        }
         setCurrentUser(demoUser);
         return { success: true, user: demoUser, demo: true };
       }
@@ -127,9 +124,8 @@ export const AuthProvider = ({ children }) => {
           }
           data.user = sessionData.session.user;
         }
-          const nextUser = getUserFromSupabase(data.user, roleHint);
+        const nextUser = getUserFromSupabase(data.user);
         setCurrentUser(nextUser);
-
         setIsLoading(false);
         return { success: true, user: nextUser };
       }
